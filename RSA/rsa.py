@@ -4,7 +4,7 @@ import sys
 
 import gmpy2
 
-from util.error import RSAError, WienerError
+from util.error import RSAError, WienerError, HastadError, CommonModError
 
 class RSA:
     def __init__(self, p, q, e=65537):
