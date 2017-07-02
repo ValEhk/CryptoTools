@@ -10,6 +10,14 @@ class FactorizationError(Exception):
 class FactordbError(FactorizationError):
     pass
 
+class UnitWarning(UserWarning):
+    """Factorization of 1"""
+    pass
+
+class FactorizationWarning(UserWarning):
+    """Unknown, incomplete or trivial factorization"""
+    pass
+
 # -------------------------------------------------------------------------- #
 
 class RSAError(Exception):
@@ -37,10 +45,9 @@ class FormatError(Exception):
 
 # -------------------------------------------------------------------------- #
 
-class UnitWarning(UserWarning):
-    """Factorization of 1"""
-    pass
-
-class FactorizationWarning(UserWarning):
-    """Unknown, incomplete or trivial factorization"""
-    pass
+class GF28Error(Exception):
+    """General error occuring when computing values in GF(2^8)"""
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return self.value

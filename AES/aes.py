@@ -8,40 +8,39 @@ from . import gf28
 class AES_Matrix:
     def __init__(self, init):
         self.mat = init
+        self.cols = 4
+        self.rows = 4
 
     def add_roundkey(expanded_key, round):
         rkey = ""
-        for i in range(16):
-            self.mat[i] ^= rkey[i]
+        for r in range(self.rows):
+            for c in range(self.cols):
+                self.mat[r][c] ^= rkey[r][c]
 
     def sub_bytes():
-        for i in range(16):
-            self.mat[i] = _sbox[self.mat[i]]
-
+        for r in range(self.rows):
+            for c in range(self.cols):
+                self.mat[r][c] = _sbox[self.mat[r][c]]
     def inv_sub_bytes():
-        for i in range(16):
-            self.mat[i] = _invsbox[self.mat[i]]
+        for r in range(self.rows):
+            for c in range(self.cols):
+                self.mat[r][c] = _invsbox[self.mat[r][c]]
 
     def mix_columns():
-        gf28.matrix_multiply(self.mat, _mds)
-
+        self.mat = gf28.matrix_multiply(self.mat, _mds)
     def inv_mix_columns():
-        gf28.matrix_multiply(self.mat, _invmds)
+        self.mat = gf28.matrix_multiply(self.mat, _invmds)
 
     def shift_rows():
-        for i in range(4):
-            start, split, end = 4*i, 4*i+i, 4*i+4
-            tmp = self.mat[start:split]
-            self.mat[start:end-split] = self.mat[split:end]
-            self.mat[end-split:end] = tmp
-
-    # TODO
+        for r in range(1, self.rows):
+            tmp = self.mat[r][:r]
+            self.mat[r][:self.cols-r] = self.mat[r][r:]
+            self.mat[r][self.cols-r:] = tmp
     def invshift_rows():
-        for i in range(4):
-            start, split, end = 4*i, 4*i+4-i, 4*i+4
-            tmp = self.mat[split:end]
-            self.mat[start:split] = self.mat[end-split:end]
-            self.mat[start:end] = tmp
+        for r in range(1, self.rows):
+            tmp = self.mat[r][self.cols-r:]
+            self.mat[r][r:] = self.mat[r][:self.cols-r]
+            self.mat[r][:r] = tmp
 
 # -------------------------------------------------------------------------- #
 
@@ -63,14 +62,15 @@ def _initialize_sbox():
         _sbox[i] = svalue ^ 0x63
         _invsbox[svalue ^ 0x63] = i
 
+# TODO
 def _initialize_rcon():
     pass
 
 _sbox = None
 _invsbox = None
 _rcon = None
-_mds = [2,3,1,1, 1,2,3,1, 1,1,2,3, 3,1,1,2]
-_invmds = [14, 11, 13, 9, 9, 14, 11, 13, 13, 9, 14, 11, 11, 13, 9, 14]
+_mds = [[2,3,1,1], [1,2,3,1], [1,1,2,3], [3,1,1,2]]
+_invmds = [[14,11,13,9], [9,14,11,13], [13,9,14,11], [11,13,9,14]]
 
 class AES:
     def __init__(self, key, mode, iv):
@@ -81,6 +81,7 @@ class AES:
         self._rounds = 10
         self._explen = 176
 
+    # TODO update rows/cols
     def encrypt(self, plain):
         state = AES_Matrix(plain)
         expkey = self._expand_key()
@@ -96,6 +97,7 @@ class AES:
         return state.mat
 
 
+    # TODO update rows/cols
     def decrypt(self, cipher):
         state = AES_Matrix(cipher)
         expkey = self._expand_key()
@@ -110,6 +112,7 @@ class AES:
         state.add_roundkey(expkey, 0)
         return state.mat
 
+    # TODO update rows/cols
     def _expand_key(self):
         expykey = self.key[:]
         idx_rcon = 1
