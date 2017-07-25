@@ -13,9 +13,16 @@ class TestGF28(TestCase):
         self.assertEqual(gf28.multiply(241, 3), 8)
         self.assertEqual(gf28.multiply(125, 424), 24)
 
-    # TODO complete tests
     def test_matrix_multiply(self):
-        pass
+        """More tests for matrix_multiply are in tests/test_aes.py:
+        AES_Matrix.mix_columns since the mix_columns() function is just a
+        wrapper for the matrix_multiply function.
+        """
+        mat1 = [[0,1], [1,0]]
+        self.assertEqual(gf28.matrix_multiply(mat1, mat1), [[1,0], [0,1]])
+        with self.assertRaises(GF28Error):
+            gf28.matrix_multiply([[0,0], [0,0]], [[0,1,2], [2,1,0]])
+            gf28.matrix_multiply([[0,0], [0,0], [3,4]], [[0,1], [2,1], [5,0]])
 
     def test_invert(self):
         self.assertEqual(gf28.invert(0), 0)

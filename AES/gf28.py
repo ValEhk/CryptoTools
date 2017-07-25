@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# TODO comments
 from util.error import GF28Error
 
 _logtable = None
@@ -31,17 +32,25 @@ def multiply(x, y):
             x ^= 0x11B
     return res
 
+
+def _matrix_substep(leftop, rightop):
+    res = 0
+    for i in range(len(leftop)):
+        res ^= multiply(leftop[i], rightop[i])
+    return res
+
 def matrix_multiply(x, y):
     """Matrix multiplication in GF(2^8)."""
     if len(x) != len(y[0]) or len(x[0]) != len(y):
-        raise GF28Error("Matrices' sizes are not matching")
-    msize = xdim[0]*xdim[1]
-    res = [0 for i in range(msize)]
-    # TODO transpose matrix
-    # yt = 
-    for i, xi, yi in enumerate(zip(xi, yi)):
-        for k in range(xdim[0]):
-            res[i] ^= multiply(xi, yi)
+        raise GF28Error("Matrices' sizes not matching")
+    msize = len(x)
+    auxsize = len(x[0])
+    res = [[0 for j in range(msize)] for i in range(msize)]
+    yt = [list(c) for c in zip(*y)]
+    for i in range(msize):
+        for j in range(msize):
+            res[i][j] = _matrix_substep(x[i], yt[j])
+    return res
 
 def invert(n):
     if n < 0 or n > 255:

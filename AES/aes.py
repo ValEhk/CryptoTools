@@ -3,56 +3,69 @@
 from util.blockcipher import MODE
 from . import gf28
 
+# TODO comments
+_sbox = None
+_invsbox = None
+_rcon = None
+_mds = [[2,3,1,1], [1,2,3,1], [1,1,2,3], [3,1,1,2]]
+_invmds = [[14,11,13,9], [9,14,11,13], [13,9,14,11], [11,13,9,14]]
+
 # -------------------------------------------------------------------------- #
 
 class AES_Matrix:
     def __init__(self, init):
-        self.mat = init
+        if not _sbox:
+            _initialize_sbox()
+        self.state = init
         self.cols = 4
         self.rows = 4
 
-    def add_roundkey(expanded_key, round):
-        rkey = ""
+    # TODO complete func
+    def add_roundkey(self, expanded_key, round):
+        for r in range(self.rows):
+            rkey = expanded_key[round:round+16:4]
+            for c in range(self.cols):
+                self.state[r][c] ^= rkey[c]
+
+    def sub_bytes(self):
         for r in range(self.rows):
             for c in range(self.cols):
-                self.mat[r][c] ^= rkey[r][c]
-
-    def sub_bytes():
+                self.state[r][c] = _sbox[self.state[r][c]]
+    def inv_sub_bytes(self):
         for r in range(self.rows):
             for c in range(self.cols):
-                self.mat[r][c] = _sbox[self.mat[r][c]]
-    def inv_sub_bytes():
-        for r in range(self.rows):
-            for c in range(self.cols):
-                self.mat[r][c] = _invsbox[self.mat[r][c]]
+                self.state[r][c] = _invsbox[self.state[r][c]]
 
-    def mix_columns():
-        self.mat = gf28.matrix_multiply(self.mat, _mds)
-    def inv_mix_columns():
-        self.mat = gf28.matrix_multiply(self.mat, _invmds)
+    def mix_columns(self):
+        self.state = gf28.matrix_multiply(_mds, self.state)
+    def inv_mix_columns(self):
+        self.state = gf28.matrix_multiply(_invmds, self.state )
 
-    def shift_rows():
+    def shift_rows(self):
         for r in range(1, self.rows):
-            tmp = self.mat[r][:r]
-            self.mat[r][:self.cols-r] = self.mat[r][r:]
-            self.mat[r][self.cols-r:] = tmp
-    def invshift_rows():
+            tmp = self.state[r][:r]
+            self.state[r][:self.cols-r] = self.state[r][r:]
+            self.state[r][self.cols-r:] = tmp
+    def invshift_rows(self):
         for r in range(1, self.rows):
-            tmp = self.mat[r][self.cols-r:]
-            self.mat[r][r:] = self.mat[r][:self.cols-r]
-            self.mat[r][:r] = tmp
+            tmp = self.state[r][self.cols-r:]
+            self.state[r][r:] = self.state[r][:self.cols-r]
+            self.state[r][:r] = tmp
 
 # -------------------------------------------------------------------------- #
 
+# TODO move up
 def xor_lists(l1, l2):
-#     TODO itertools? + moce dans util
+#     TODO itertools? + move dans util
     res = []
     for i in range(len(l1)):
         res.append(l1[i] ^ l2[i])
     return res
 
 def _initialize_sbox():
+    global _sbox, _invsbox
     _sbox = [0 for i in range(256)]
+    _invsbox = [0 for i in range(256)]
     for i in range(256):
         n = gf28.invert(i)
         svalue = 0
@@ -66,14 +79,8 @@ def _initialize_sbox():
 def _initialize_rcon():
     pass
 
-_sbox = None
-_invsbox = None
-_rcon = None
-_mds = [[2,3,1,1], [1,2,3,1], [1,1,2,3], [3,1,1,2]]
-_invmds = [[14,11,13,9], [9,14,11,13], [13,9,14,11], [11,13,9,14]]
-
 class AES:
-    def __init__(self, key, mode, iv):
+    def __init__(self, key, mode, iv=None):
         if not _sbox or not _rcon:
             _initialize_rcon()
             _initialize_sbox()
@@ -84,7 +91,6 @@ class AES:
     # TODO update rows/cols
     def encrypt(self, plain):
         state = AES_Matrix(plain)
-        expkey = self._expand_key()
         state.add_roundkey(expkey, 0)
         for i in range(1, self._rounds-1):
             state.sub_bytes()
