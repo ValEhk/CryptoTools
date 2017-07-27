@@ -1,6 +1,9 @@
 #!/usr/bin/env python
+import itertools
+import binascii
 
 from util.blockcipher import MODE
+from util.inparser import ascii_to_hexarray
 from . import gf28
 
 # TODO comments
@@ -20,12 +23,17 @@ class AES_Matrix:
         self.cols = 4
         self.rows = 4
 
+    def _get_subkey(self, expanded_key, round):
+        offset = 16*round
+        subkey = [expanded_key[offset+i:offset+16:4] for i in range(self.rows)]
+        return subkey
+
     # TODO complete func
     def add_roundkey(self, expanded_key, round):
+        rkey = self._get_subkey(expanded_key, round)
         for r in range(self.rows):
-            rkey = expanded_key[round:round+16:4]
             for c in range(self.cols):
-                self.state[r][c] ^= rkey[c]
+                self.state[r][c] ^= rkey[r][c]
 
     def sub_bytes(self):
         for r in range(self.rows):
@@ -46,13 +54,37 @@ class AES_Matrix:
             tmp = self.state[r][:r]
             self.state[r][:self.cols-r] = self.state[r][r:]
             self.state[r][self.cols-r:] = tmp
-    def invshift_rows(self):
+    def inv_shift_rows(self):
         for r in range(1, self.rows):
             tmp = self.state[r][self.cols-r:]
             self.state[r][r:] = self.state[r][:self.cols-r]
             self.state[r][:r] = tmp
 
 # -------------------------------------------------------------------------- #
+# TODO check + eveythin sur aes
+
+def matrix_to_ascii(mat):
+    return binascii.unhexlify(matrix_to_hex(mat)).decode("ISO-8859-1")
+
+def hex_to_matrix(hexstr):
+    hexarray = [int("0x"+hexstr[i:i+2], 16) for i in range(0, len(hexstr), 2)]
+    mat = []
+    for i in range(4):
+        mat.append(hexarray[i::4])
+    return mat
+
+def ascii_to_matrix(str):
+    """Convert ascii string into  a 4x4 matrix"""
+    hexarray = ascii_to_hexarray(str)
+    return [[hexarray[k] for k in range(i, 16, 4)] for i in range(4)]
+
+def matrix_to_hex(mat):
+    """Convert a  matrix into an hex string"""
+    res = []
+    mapt = map(list, zip(*mat))
+    for c in itertools.chain(*mapt):
+        res.append("{:02x}".format(c))
+    return ''.join(res)
 
 # TODO move up
 def xor_lists(l1, l2):
@@ -75,9 +107,14 @@ def _initialize_sbox():
         _sbox[i] = svalue ^ 0x63
         _invsbox[svalue ^ 0x63] = i
 
-# TODO
+# TODO mettre ca + sbox a part
 def _initialize_rcon():
-    pass
+    global _rcon
+    _rcon = [0 for i in range(255)]
+    value = 0x8d
+    for i in range(0, 255):
+        _rcon[i] = value
+        value = gf28.multiply(value, 2)
 
 class AES:
     def __init__(self, key, mode, iv=None):
@@ -90,44 +127,45 @@ class AES:
 
     # TODO update rows/cols
     def encrypt(self, plain):
-        state = AES_Matrix(plain)
-        state.add_roundkey(expkey, 0)
-        for i in range(1, self._rounds-1):
-            state.sub_bytes()
-            state.shift_rows()
-            state.mix_columns()
-            state.add_roundkey(expkey, i)
-        state.sub_bytes()
-        state.shift_rows()
-        state.add_roundkey(expkey, self._rounds)
-        return state.mat
+        matrix = AES_Matrix(ascii_to_matrix(plain))
+        expkey = self._expand_key()
+        matrix.add_roundkey(expkey, 0)
+        for i in range(1, self._rounds):
+            matrix.sub_bytes()
+            matrix.shift_rows()
+            matrix.mix_columns()
+            matrix.add_roundkey(expkey, i)
+        matrix.sub_bytes()
+        matrix.shift_rows()
+        matrix.add_roundkey(expkey, self._rounds)
+        return matrix_to_hex(matrix.state)
 
 
     # TODO update rows/cols
     def decrypt(self, cipher):
-        state = AES_Matrix(cipher)
+        matrix = AES_Matrix(hex_to_matrix(cipher))
         expkey = self._expand_key()
-        state.add_roundkey(expkey, self._rounds)
-        state.shift_rows()
-        state.sub_bytes()
+        matrix.add_roundkey(expkey, self._rounds)
+        matrix.inv_shift_rows()
+        matrix.inv_sub_bytes()
         for i in range(self._rounds-1, 0, -1):
-            state.add_roundkey(expkey, i)
-            state.inv_mix_columns()
-            state.inv_shift_rows()
-            state.inv_sub_bytes()
-        state.add_roundkey(expkey, 0)
-        return state.mat
+            matrix.add_roundkey(expkey, i)
+            matrix.inv_mix_columns()
+            matrix.inv_shift_rows()
+            matrix.inv_sub_bytes()
+        matrix.add_roundkey(expkey, 0)
+        return matrix_to_ascii(matrix.state)
 
     # TODO update rows/cols
     def _expand_key(self):
-        expykey = self.key[:]
+        expkey = ascii_to_hexarray(self.key)
         idx_rcon = 1
-        while len(expkey) < self.explen:
+        while len(expkey) < self._explen:
             tmp = expkey[-4:]
             tmp = tmp[1:] + tmp[:1]
             for i in range(4):
-                t[i] = _sbox[t[i]]
-            t[0] ^= rcon[idx_rcon]
+                tmp[i] = _sbox[tmp[i]]
+            tmp[0] ^= _rcon[idx_rcon]
             idx_rcon += 1
             for _ in range(4):
                 tmp = xor_lists(tmp, expkey[-16:-12])

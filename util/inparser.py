@@ -30,6 +30,7 @@ def ascii_to_hexarray(str):
     hex = binascii.hexlify(str.encode())
     return [int(hex[i:i+2], 16) for i in range(0, len(hex), 2)]
 
+
 # -------------------------------------------------------------------------- #
 
 def parse_file(filename):
