@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from AES import gf28
+import util.gf28 as gf28
 from util.error import GF28Error
 
 class TestGF28(TestCase):

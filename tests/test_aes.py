@@ -3,6 +3,7 @@
 from unittest import TestCase
 
 from AES.aes import *
+from AES.aesutil import *
 from util.blockcipher import MODE
 from util.inparser import hex_to_ascii, ascii_to_hex
 
@@ -22,10 +23,9 @@ class TestSteps(TestCase):
                 204, 63, 226, 115, 239, 252, 215, 46, 171, 204, 136, 127, 167,
                 92, 162, 244, 107, 99, 64, 135, 132, 159, 151, 71, 112, 68,
                 159, 56, 215, 24, 61, 204, 188, 123, 125, 75, 56, 228, 234]
-        aes = AES(key, MODE.ECB)
-        self.assertEqual(expected, aes._expand_key())
+        self.assertEqual(expected, expand_key(key))
 
-        aes.key = "OneTwoThreeFour!"
+        key = "OneTwoThreeFour!"
         expected = [79, 110, 101, 84, 119, 111, 84, 104, 114, 101, 101, 70,
                 111, 117, 114, 33, 211, 46, 152, 252, 164, 65, 204, 148, 214,
                 36, 169, 210, 185, 81, 219, 243, 0, 151, 149, 170, 164, 214,
@@ -40,7 +40,7 @@ class TestSteps(TestCase):
                 63, 4, 144, 58, 249, 113, 173, 24, 60, 117, 86, 250, 216, 31,
                 176, 51, 255, 227, 189, 9, 6, 146, 16, 17, 58, 231, 70, 235,
                 226, 248, 246]
-        self.assertEqual(expected, aes._expand_key())
+        self.assertEqual(expected, expand_key(key))
 
     def test_shift_rows(self):
         state = [[215, 99, 175, 64], [35, 18, 241, 164],
