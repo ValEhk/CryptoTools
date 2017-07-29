@@ -3,16 +3,22 @@
 from AES.aesutil import *
 from util.blockcipher import MODE
 from util.convert import *
+from util.error import AESError
 
 # TODO comments
 # TODO check + eveythin sur aes
+_nbrounds = {16: 10, 24:12, 32:14}
 
 class AES:
     def __init__(self, key, mode, iv=None):
         self.key = key
+        self.keylen = len(key)
+        try:
+            self._rounds = _nbrounds[self.keylen]
+        except KeyError:
+            raise AESError("Invalid key length (must be 16, 24 or 32 bytes)")
         self.mode = mode
         self.iv = iv
-        self._rounds = 10
 
     def encrypt(self, plain):
         matrix = AES_Matrix(str_to_matrix(plain))

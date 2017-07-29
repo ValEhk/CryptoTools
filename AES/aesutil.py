@@ -78,7 +78,8 @@ def _initialize_rcon():
 
 # -------------------------------------------------------------------------- #
 
-_explen = {16:176}
+_explen = {16:176, 24:208, 32:240}
+_reloop = {16:0, 24:2, 32:3}
 
 def xor_lists(l1, l2):
 #     TODO itertools? + move dans util
@@ -87,20 +88,35 @@ def xor_lists(l1, l2):
         res.append(l1[i] ^ l2[i])
     return res
 
+def _keysched_core(expanded_key, idx_rcon):
+    res = expanded_key[-4:]
+    res = res[1:] + res[:1]
+    for i in range(4):
+        res[i] = _sbox[res[i]]
+    res[0] ^= _rcon[idx_rcon]
+    return res
+
 def expand_key(key):
     keylen = len(key)
     expanded_key = str_to_hexarray(key)
     idx_rcon = 1
     while len(expanded_key) < _explen[keylen]:
-        tmp = expanded_key[-4:]
-        tmp = tmp[1:] + tmp[:1]
-        for i in range(4):
-            tmp[i] = _sbox[tmp[i]]
-        tmp[0] ^= _rcon[idx_rcon]
+        nextfour = _keysched_core(expanded_key, idx_rcon)
         idx_rcon += 1
         for _ in range(4):
-            tmp = xor_lists(tmp, expanded_key[-16:-12])
+            nextfour = xor_lists(nextfour, expanded_key[-keylen:-keylen+4])
+            expanded_key.extend(nextfour)
+        if keylen == 32:
+            tmp = expanded_key[-4:]
+            for i in range(4):
+                tmp[i] = _sbox[tmp[i]]
+            tmp = xor_lists(tmp, expanded_key[-keylen:-keylen+4])
             expanded_key.extend(tmp)
+        for k in range(_reloop[keylen]):
+            tmp = expanded_key[-4:]
+            tmp = xor_lists(tmp, expanded_key[-keylen:-keylen+4])
+            expanded_key.extend(tmp)
+    expanded_key = expanded_key[:_explen[keylen]]
     return expanded_key
 
 # -------------------------------------------------------------------------- #

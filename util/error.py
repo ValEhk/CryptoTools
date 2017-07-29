@@ -51,3 +51,12 @@ class GF28Error(Exception):
         self.value = value
     def __str__(self):
         return self.value
+
+# -------------------------------------------------------------------------- #
+
+class AESError(Exception):
+    """General AES Error"""
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return self.value
