@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import util.gf28 as gf28
-from util.inparser import ascii_to_hexarray
+from util.convert import ascii_to_hexarray
 # TODO comments
 
 _sbox = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67,

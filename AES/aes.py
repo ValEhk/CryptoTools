@@ -1,44 +1,17 @@
 #!/usr/bin/env python3
 
-import itertools
-import binascii
-
 from AES.aesutil import *
 from util.blockcipher import MODE
-from util.inparser import ascii_to_hexarray
+from util.convert import *
 
 # TODO comments
-
-# -------------------------------------------------------------------------- #
 # TODO check + eveythin sur aes
-
-# TODO move ça dans util.convert.py
-def matrix_to_ascii(mat):
-    return binascii.unhexlify(matrix_to_hex(mat)).decode("ISO-8859-1")
-
-def hex_to_matrix(hexstr):
-    hexarray = [int("0x"+hexstr[i:i+2], 16) for i in range(0, len(hexstr), 2)]
-    mat = []
-    for i in range(4):
-        mat.append(hexarray[i::4])
-    return mat
-
-def ascii_to_matrix(str):
-    """Convert ascii string into  a 4x4 matrix"""
-    hexarray = ascii_to_hexarray(str)
-    return [[hexarray[k] for k in range(i, 16, 4)] for i in range(4)]
-
-def matrix_to_hex(mat):
-    """Convert a  matrix into an hex string"""
-    res = []
-    mapt = map(list, zip(*mat))
-    for c in itertools.chain(*mapt):
-        res.append("{:02x}".format(c))
-    return ''.join(res)
 
 class AES:
     def __init__(self, key, mode, iv=None):
         self.key = key
+        self.mode = mode
+        self.iv = iv
         self._rounds = 10
 
     def encrypt(self, plain):
@@ -53,7 +26,7 @@ class AES:
         matrix.sub_bytes()
         matrix.shift_rows()
         matrix.add_roundkey(expkey, self._rounds)
-        return matrix_to_hex(matrix.state)
+        return matrix_to_hexstring(matrix.state)
 
     def decrypt(self, cipher):
         matrix = AES_Matrix(hex_to_matrix(cipher))

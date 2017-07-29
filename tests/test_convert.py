@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from util.inparser import *
+from util.convert import *
 
 class TestHex2Ascii(TestCase):
     def test_a2hstr(self):

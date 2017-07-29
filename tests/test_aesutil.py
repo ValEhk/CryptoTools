@@ -5,7 +5,7 @@ from unittest import TestCase
 
 from AES.aesutil import *
 from util.blockcipher import MODE
-from util.inparser import hex_to_ascii, ascii_to_hex
+from util.convert import hex_to_ascii, ascii_to_hex
 
 class TestSteps(TestCase):
     def test_key_sched(self):

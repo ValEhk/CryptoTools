@@ -3,7 +3,7 @@
 from unittest import TestCase
 
 from RSA.rsa import *
-from util.inparser import hex_to_ascii, ascii_to_hex
+from util.convert import hex_to_ascii, ascii_to_hex
 
 class TestGen(TestCase):
     def test_simple(self):

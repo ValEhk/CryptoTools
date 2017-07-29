@@ -1,1 +1,1 @@
-__all__ = ["error", "inparser", "blockcipher"]
+__all__ = ["error", "inparser", "blockcipher", "connect"]
