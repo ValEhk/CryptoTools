@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 
-import binascii
 from unittest import TestCase
 
 from AES.aesutil import *
-from util.blockcipher import MODE
-from util.convert import hex_to_ascii, ascii_to_hex
 
 class TestSteps(TestCase):
     def test_key_sched(self):
-        key = "YELLOW SUBMARINE"
+        key = b"YELLOW SUBMARINE"
         expected = [89, 69, 76, 76, 79, 87, 32, 83, 85, 66, 77, 65, 82, 73,
                 78, 69, 99, 106, 34, 76, 44, 61, 2, 31, 121, 127, 79, 94, 43,
                 54, 1, 27, 100, 22, 141, 189, 72, 43, 143, 162, 49, 84, 192,
@@ -25,7 +22,7 @@ class TestSteps(TestCase):
                 159, 56, 215, 24, 61, 204, 188, 123, 125, 75, 56, 228, 234]
         self.assertEqual(expected, expand_key(key))
 
-        key = "OneTwoThreeFour!"
+        key = b"OneTwoThreeFour!"
         expected = [79, 110, 101, 84, 119, 111, 84, 104, 114, 101, 101, 70,
                 111, 117, 114, 33, 211, 46, 152, 252, 164, 65, 204, 148, 214,
                 36, 169, 210, 185, 81, 219, 243, 0, 151, 149, 170, 164, 214,

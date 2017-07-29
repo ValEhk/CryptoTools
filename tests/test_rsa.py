@@ -3,7 +3,6 @@
 from unittest import TestCase
 
 from RSA.rsa import *
-from util.convert import hex_to_ascii, ascii_to_hex
 
 class TestGen(TestCase):
     def test_simple(self):
@@ -12,7 +11,7 @@ class TestGen(TestCase):
         self.assertEqual(pub.n, 3233)
         self.assertEqual(priv.n, 3233)
         self.assertEqual(priv.d, 413)
-        plain_true = ascii_to_hex("H")
+        plain_true = b"H"
         cipher_true = 0xbb8
         cipher = pub.encrypt(plain_true)
         self.assertEqual(cipher_true, cipher)
@@ -27,7 +26,7 @@ class TestGen(TestCase):
 
 class TestCTF(TestCase):
     def test_abctf_oldrsa(self):
-        plain = "ABCTF{th1s_was_h4rd_in_1980}"
+        plain = b"ABCTF{th1s_was_h4rd_in_1980}"
         cipher = 0x41fcc60d2cd6e05c9883c099959de17b1305983c7c99b57b1133a3f507849bd1
         n = 70736025239265239976315088690174594021646654881626421461009089480870633400973
         e = 3
@@ -37,28 +36,28 @@ class TestCTF(TestCase):
         pub, priv = r.gen_keys()
         self.assertEqual(n, pub.n)
         self.assertEqual(n, priv.n)
-        self.assertEqual(cipher, pub.encrypt(ascii_to_hex(plain)))
-        self.assertEqual(plain, hex_to_ascii(priv.decrypt(cipher)))
+        self.assertEqual(cipher, pub.encrypt(plain))
+        self.assertEqual(plain, priv.decrypt(cipher))
 
     def test_abctf_sexyrsa(self):
-        plain = "ABCTF{i_h4ve_an_RSA_fetish_;)}"
+        plain = b"ABCTF{i_h4ve_an_RSA_fetish_;)}"
         cipher = 293430917376708381243824815247228063605104303548720758108780880727974339086036691092136736806182713047603694090694712685069524383098129303183298249981051498714383399595430658107400768559066065231114145553134453396428041946588586604081230659780431638898871362957635105901091871385165354213544323931410599944377781013715195511539451275610913318909140275602013631077670399937733517949344579963174235423101450272762052806595645694091546721802246723616268373048438591
         p = 1099610570827941329700237866432657027914359798062896153406865588143725813368448278118977438921370935678732434831141304899886705498243884638860011461262640420256594271701812607875254999146529955445651530660964259381322198377196122393
         q = 1099610570827941329700237866432657027914359798062896153406865588143725813368448278118977438921370935678732434831141304899886705498243884638860011461262640420256594271701812607875254999146529955445651530660964259381322198377196122399
         r = RSA(p, q)
         pub, priv = r.gen_keys()
-        self.assertEqual(cipher, pub.encrypt(ascii_to_hex(plain)))
-        self.assertEqual(plain, hex_to_ascii(priv.decrypt(cipher)))
+        self.assertEqual(cipher, pub.encrypt(plain))
+        self.assertEqual(plain, priv.decrypt(cipher))
 
     def test_icectf_rsa50(self):
-        plain = "IceCTF{falls_apart_so_easily_and_reassembled_so_crudely}"
+        plain = b"IceCTF{falls_apart_so_easily_and_reassembled_so_crudely}"
         cipher = 0x4963654354467b66616c6c735f61706172745f736f5f656173696c795f616e645f7265617373656d626c65645f736f5f63727564656c797d
         e = 0x1
         n = 0x180be86dc898a3c3a710e52b31de460f8f350610bf63e6b2203c08fddad44601d96eb454a34dab7684589bc32b19eb27cffff8c07179e349ddb62898ae896f8c681796052ae1598bd41f35491175c9b60ae2260d0d4ebac05b4b6f2677a7609c2fe6194fe7b63841cec632e3a2f55d0cb09df08eacea34394ad473577dea5131552b0b30efac31c59087bfe603d2b13bed7d14967bfd489157aa01b14b4e1bd08d9b92ec0c319aeb8fedd535c56770aac95247d116d59cae2f99c3b51f43093fd39c10f93830c1ece75ee37e5fcdc5b174052eccadcadeda2f1b3a4a87184041d5c1a6a0b2eeaa3c3a1227bc27e130e67ac397b375ffe7c873e9b1c649812edcd
         pub = PubKey(n, e)
-        self.assertEqual(cipher, pub.encrypt(ascii_to_hex(plain)))
+        self.assertEqual(cipher, pub.encrypt(plain))
         priv = PrivKey(n, 0x1)
-        self.assertEqual(plain, hex_to_ascii(priv.decrypt(cipher)))
+        self.assertEqual(plain, priv.decrypt(cipher))
 
 # -------------------------------------------------------------------------- #
 

@@ -5,6 +5,7 @@ import sys
 import gmpy2
 
 from util.error import RSAError, WienerError, HastadError, CommonModError
+from util.convert import hex_to_str, str_to_hex
 
 class RSA:
     def __init__(self, p, q, e=65537):
@@ -65,8 +66,9 @@ class PubKey():
     def __repr__(self):
         return "PubKey(%d, %d)" % (self.n, self.e)
 
-    def encrypt(self, plain):
+    def encrypt(self, plainstr):
         """Encrypt plain with self."""
+        plain = str_to_hex(plainstr)
         cipher = pow(plain, self.e, self.n)
         return cipher
 
@@ -84,7 +86,7 @@ class PrivKey():
     def decrypt(self, cipher):
         """Decrypt cipher with self."""
         plain = pow(cipher, self.d, self.n)
-        return plain
+        return hex_to_str(plain)
 
 # -------------------------------------------------------------------------- #
 

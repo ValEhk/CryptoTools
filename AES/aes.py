@@ -15,7 +15,7 @@ class AES:
         self._rounds = 10
 
     def encrypt(self, plain):
-        matrix = AES_Matrix(ascii_to_matrix(plain))
+        matrix = AES_Matrix(str_to_matrix(plain))
         expkey = expand_key(self.key)
         matrix.add_roundkey(expkey, 0)
         for i in range(1, self._rounds):
@@ -26,10 +26,10 @@ class AES:
         matrix.sub_bytes()
         matrix.shift_rows()
         matrix.add_roundkey(expkey, self._rounds)
-        return matrix_to_hexstring(matrix.state)
+        return matrix_to_hexstr(matrix.state)
 
     def decrypt(self, cipher):
-        matrix = AES_Matrix(hex_to_matrix(cipher))
+        matrix = AES_Matrix(hexstr_to_matrix(cipher))
         expkey = expand_key(self.key)
         matrix.add_roundkey(expkey, self._rounds)
         matrix.inv_shift_rows()
@@ -40,5 +40,5 @@ class AES:
             matrix.inv_shift_rows()
             matrix.inv_sub_bytes()
         matrix.add_roundkey(expkey, 0)
-        return matrix_to_ascii(matrix.state)
+        return matrix_to_str(matrix.state)
 

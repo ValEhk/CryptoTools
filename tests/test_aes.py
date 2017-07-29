@@ -10,27 +10,27 @@ from util.blockcipher import MODE
 
 class TestAESECB(TestCase):
     def test_simple(self):
-        plain = "deadbeefdeadbeef"
-        key = "Yellow submarine"
+        plain = b"deadbeefdeadbeef"
+        key = b"Yellow submarine"
         aes = AES(key, MODE.ECB)
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
-        expected = binascii.hexlify(aestrue.encrypt(plain)).decode()
+        expected = binascii.hexlify(aestrue.encrypt(plain))
         self.assertEqual(cipher, expected)
         self.assertEqual(aes.decrypt(cipher), plain)
 
-        plain = "Submarine yellow"
+        plain = b"Submarine yellow"
         cipher = aes.encrypt(plain)
-        expected = binascii.hexlify(aestrue.encrypt(plain)).decode()
+        expected = binascii.hexlify(aestrue.encrypt(plain))
         self.assertEqual(cipher, expected)
         self.assertEqual(aes.decrypt(cipher), plain)
 
-        key = "\x00"*16
-        plain = "Hello world!!!!!"
+        key = b"\x00"*16
+        plain = b"Hello world!!!!!"
         aes = AES(key, MODE.ECB)
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
-        expected = binascii.hexlify(aestrue.encrypt(plain)).decode()
+        expected = binascii.hexlify(aestrue.encrypt(plain))
         self.assertEqual(cipher, expected)
         self.assertEqual(aes.decrypt(cipher), plain)
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import util.gf28 as gf28
-from util.convert import ascii_to_hexarray
+from util.convert import str_to_hexarray
 # TODO comments
 
 _sbox = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67,
@@ -89,7 +89,7 @@ def xor_lists(l1, l2):
 
 def expand_key(key):
     keylen = len(key)
-    expanded_key = ascii_to_hexarray(key)
+    expanded_key = str_to_hexarray(key)
     idx_rcon = 1
     while len(expanded_key) < _explen[keylen]:
         tmp = expanded_key[-4:]
