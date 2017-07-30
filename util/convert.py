@@ -29,11 +29,12 @@ def str_to_matrix(str):
     return [[hexarray[k] for k in range(i, 16, 4)] for i in range(4)]
 
 # -------------------------------------------------------------------------- #
-# TODO move ça dans util.convert.py
+# TODO change that
 def matrix_to_str(mat):
     return binascii.unhexlify(matrix_to_hexstr(mat))
 
-def hexstr_to_matrix(hexstr):
+def str_to_matrix(bstr):
+    hexstr = bstr.hex()
     hexarray = [int(hexstr[i:i+2], 16) for i in range(0, len(hexstr), 2)]
     mat = []
     for i in range(4):

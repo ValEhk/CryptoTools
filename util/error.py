@@ -60,3 +60,12 @@ class AESError(Exception):
         self.value = value
     def __str__(self):
         return self.value
+
+# -------------------------------------------------------------------------- #
+
+class PaddingError(Exception):
+    """Error raised when an invalid PKCS7 or ANSI X.923 has been detected"""
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return self.value
