@@ -16,13 +16,13 @@ class TestAES128_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         plain = b"Submarine yellow"
         cipher = aes.encrypt(plain)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"\x00"*16
@@ -31,14 +31,30 @@ class TestAES128_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     def test_multiple(self):
-        pass
+        key = b"\x00"*16
+        plain = b"Hello world!!!!  !!!!dlrow olleH"
+        aes = AES(key, MODE.ECB, PADDING.NONE)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
 
-    def test_padding(self):
-        pass
+        key = b"Yellow submarine"
+        plain = b"deadbeefdeadbeef"*10
+        aes = AES(key, MODE.ECB, PADDING.NONE)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
+
+    # def test_padding(self):
+    #     pass
 
 # -------------------------------------------------------------------------- #
 
@@ -50,13 +66,13 @@ class TestAES192_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         plain = b"Submarine yellow"
         cipher = aes.encrypt(plain)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"\x00"*24
@@ -65,14 +81,30 @@ class TestAES192_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     def test_multiple(self):
-        pass
+        key = b"\x00"*24
+        plain = b"Hello world!!!!  !!!!dlrow olleH"
+        aes = AES(key, MODE.ECB, PADDING.NONE)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
 
-    def test_padding(self):
-        pass
+        key = b"Yellow submarine01234567"
+        plain = b"deadbeefdeadbeef"*10
+        aes = AES(key, MODE.ECB, PADDING.NONE)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
+
+    # def test_padding(self):
+    #     pass
 
 # -------------------------------------------------------------------------- #
 
@@ -84,13 +116,13 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         plain = b"Submarine yellow"
         cipher = aes.encrypt(plain)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"\x00"*32
@@ -99,14 +131,30 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher, expected)
+        self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     def test_multiple(self):
-        pass
+        key = b"\x00"*32
+        plain = b"Hello world!!!!  !!!!dlrow olleH"
+        aes = AES(key, MODE.ECB, PADDING.NONE)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
 
-    def test_padding(self):
-        pass
+        key = b"Yellow submarineYellow submarine"
+        plain = b"deadbeefdeadbeef"*10
+        aes = AES(key, MODE.ECB, PADDING.NONE)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
+
+    # def test_padding(self):
+    #     pass
 
 # -------------------------------------------------------------------------- #
 

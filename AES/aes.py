@@ -49,7 +49,7 @@ class AES:
         return self._unpad(b"".join(parts))
 
     def _decrypt_core(self, cipher, key):
-        matrix = AES_Matrix(hexstr_to_matrix(cipher))
+        matrix = AES_Matrix(str_to_matrix(cipher))
         expkey = expand_key(key)
         matrix.add_roundkey(expkey, self._rounds)
         matrix.inv_shift_rows()
