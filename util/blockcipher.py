@@ -1,10 +1,10 @@
 from enum import IntEnum
 
-class MODE(IntEnum):
+class Mode(IntEnum):
     ECB = 0
     CBC = 1
 
-class PADDING(IntEnum):
+class Padding(IntEnum):
     NONE = 0
     ZERO = 1
     ANSI = 2

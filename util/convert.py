@@ -5,7 +5,7 @@ import itertools
 
 def hex_to_str(hexv):
     """Convert hex value into bytes string"""
-    return binascii.unhexlify("{:x}".format(hexv))
+    return binascii.unhexlify("{:02x}".format(hexv))
 
 def hexarray_to_str(hexa):
     """Convert hex array into bytes string"""

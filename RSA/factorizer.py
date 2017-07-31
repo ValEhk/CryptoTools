@@ -78,7 +78,7 @@ class Factorizer:
                 return
             p = gmpy2.next_prime(p)
             cpt += 1
-        raise FactorizationError("Factorization is incomplete")
+        raise FactorizationError("Incomplete factorization")
 
 
     def _fermat(self, n):
@@ -100,7 +100,7 @@ class Factorizer:
             b = a*a - n
             cpt += 1
             if cpt > self.limit:
-                raise FactorizationError("Factorization is incomplete")
+                raise FactorizationError("Incomplete factorization")
         self._fermat(a - gmpy2.isqrt(b))
         self._fermat(a + gmpy2.isqrt(b))
 
@@ -117,7 +117,7 @@ class Factorizer:
                 self.factors.append(p)
                 self._mersenne(n//p)
                 return
-        raise FactorizationError("Factorization is incomplete")
+        raise FactorizationError("Incomplete factorization")
 
     def _woodall(self, n):
         """Factorize n by trying the 20 first Woodall primes."""
@@ -132,4 +132,4 @@ class Factorizer:
                 self.factors.append(p)
                 self._woodall(n/p)
                 return
-        raise FactorizationError("Factorization is incomplete")
+        raise FactorizationError("Incomplete factorization")
