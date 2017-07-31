@@ -103,9 +103,6 @@ class TestAES192_ECB(TestCase):
         self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
-    # def test_padding(self):
-    #     pass
-
 # -------------------------------------------------------------------------- #
 
 class TestAES256_ECB(TestCase):
@@ -153,9 +150,38 @@ class TestAES256_ECB(TestCase):
         self.assertEqual(cipher.hex(), expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
-    # def test_padding(self):
-    #     pass
+# -------------------------------------------------------------------------- #
 
+class TestAES256_ECB(TestCase):
+    def test_zero(self):
+        plain = b"deadbeef"
+        key = b"Yellow submarine"
+        aes = AES(key, MODE.ECB, PADDING.ZERO)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain + bytes(8)))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
+
+    def test_ansi(self):
+        plain = b"deadbeef"
+        key = b"Yellow submarine"
+        aes = AES(key, MODE.ECB, PADDING.ANSI)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain + bytes(7) + b"\x08"))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
+
+    def test_pkcs(self):
+        plain = b"deadbeef"
+        key = b"Yellow submarine"
+        aes = AES(key, MODE.ECB, PADDING.PKCS7)
+        cipher = aes.encrypt(plain)
+        aestrue = pyAES.new(key, pyAES.MODE_ECB)
+        expected = binascii.hexlify(aestrue.encrypt(plain + b"\x08"*8))
+        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(aes.decrypt(cipher), plain)
 # -------------------------------------------------------------------------- #
 
 if __name__ == '__main__':

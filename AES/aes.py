@@ -85,7 +85,7 @@ class AES:
     def _unpad(self, text):
         if self.padding == PADDING.ZERO:
             while text[-1] == 0:
-                text[:-1]
+                text = text[:-1]
         elif self.padding == PADDING.ANSI or self.padding == PADDING.PKCS7:
             check = text[-text[-1]:-1]
             for n in check:

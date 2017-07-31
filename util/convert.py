@@ -29,23 +29,14 @@ def str_to_matrix(str):
     return [[hexarray[k] for k in range(i, 16, 4)] for i in range(4)]
 
 # -------------------------------------------------------------------------- #
-# TODO change that
+
 def matrix_to_str(mat):
-    return binascii.unhexlify(matrix_to_hexstr(mat))
+    barr = [mat[i%4][i//4] for i in range(16)]
+    return bytes(barr)
 
 def str_to_matrix(bstr):
-    hexstr = bstr.hex()
-    hexarray = [int(hexstr[i:i+2], 16) for i in range(0, len(hexstr), 2)]
     mat = []
+    hexarray = [n for n in bstr]
     for i in range(4):
         mat.append(hexarray[i::4])
     return mat
-
-
-def matrix_to_hexstr(mat):
-    """Convert a  matrix into an hex string"""
-    res = []
-    mapt = map(list, zip(*mat))
-    for c in itertools.chain(*mapt):
-        res.append("{:02x}".format(c))
-    return ''.join(res).encode()
