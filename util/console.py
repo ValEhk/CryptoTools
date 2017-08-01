@@ -3,6 +3,7 @@
 from enum import IntEnum
 
 from .error import FormatError
+from RSA.factorizer import Factorizer, Algo
 
 # -------------------------------------------------------------------------- #
 
@@ -24,8 +25,13 @@ def parse_file(filename):
 # -------------------------------------------------------------------------- #
 
 def print_title(title):
+    print("*"*(len(title) + 6))
     print(" "*3 + title + " "*3)
     print("*"*(len(title) + 6))
+
+def print_subtitle(title):
+    print("\n"+title)
+    print("-"*len(title))
 
 # -------------------------------------------------------------------------- #
 
@@ -34,27 +40,29 @@ def convert(value, type):
         return int(value, 0)
     elif type == "ustr":
         return value.upper()
+    elif type == "falgo":
+        try:
+            return Algo[value.upper()]
+        except KeyError:
+            print("Oh dear, we are in trouble!")
+            return ""
     return value.encode()
 
-def get_parameters(params, types, defaults=None):
+def get_parameters(params):
     for key,value in params.items():
         nval = ""
-        while not nval:
-            if not value:
+        while nval == "":
+            if not value[0]:
                 inputstr = "{}: ".format(key)
             else:
-                inputstr = "{} [{}]: ".format(key, value)
+                inputstr = "{} [{}]: ".format(key, value[0])
             nval = input(inputstr)
             if not nval:
-                if defaults:
-                    nval = defaults[key]
-                else:
-                    print("Nope, try again!")
-            else:
-                try:
-                    nval = convert(nval, types[key])
-                except ValueError:
-                    nval = ""
-                    print("At least you tried...")
-                    continue
+                nval = value[2]
+            try:
+                nval = convert(nval, value[1])
+            except (ValueError, TypeError):
+                nval = ""
+                print("At least you tried...")
+                continue
         params[key] = nval
