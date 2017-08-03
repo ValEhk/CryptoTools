@@ -36,15 +36,6 @@ class CommonModError(RSAError):
 
 # -------------------------------------------------------------------------- #
 
-class FormatError(Exception):
-    """Error raised when the input file is not correctly formatted"""
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return self.value
-
-# -------------------------------------------------------------------------- #
-
 class GF28Error(Exception):
     """General error occuring when computing values in GF(2^8)"""
     def __init__(self, value):

@@ -160,7 +160,7 @@ def hastad(pks, cs):
     for pk,c in zip(pks, cs):
         p = prod//pk.n
         me += c * gmpy2.invert(p, pk.n) * p
-    return gmpy2.iroot(me % prod, pks[0].e)[0]
+    return hex_to_str(gmpy2.iroot(me % prod, pks[0].e)[0])
 
 def _check(pks, cs):
     """Check if Hastad's attack is possible with the given values."""
@@ -193,4 +193,4 @@ def common_modulus(pk1, pk2, c1, c2):
     inv_c2 = gmpy2.invert(c2, pk2.n)
     m1 = pow(c1, u, pk1.n)
     m2 = pow(inv_c2, -v, pk2.n)
-    return m1*m2 % pk1.n
+    return hex_to_str(m1*m2 % pk1.n)
