@@ -2,7 +2,7 @@
 
 import sys
 import gmpy2
-from argparse import ArgumentParser, ArgumentError
+from argparse import ArgumentParser, ArgumentError, RawDescriptionHelpFormatter
 
 from RSA.rsa import *
 from RSA.factorizer import Factorizer, Algo
@@ -66,9 +66,13 @@ def parse_int(value):
 # TODO vigenere
 # TODO change descr
 if __name__ == "__main__":
-    descr = ("Crypto-CTF is a small python tool providing a quick and easy ",
-        "way to complete the basic cryptography challenges commonly found during CTFs.")
-    parser = ArgumentParser(description=''.join(descr))
+    descr = ("Cryptotools is a small python tool providing a quick and easy ",
+        "way to complete the basic cryptography challenges commonly found during CTFs.",
+        "\n\nCurrently available are:",
+        "\n    * RSA basic encryption/decryption;",
+        "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
+        "\n    * AES-128, AES-192, AES-224 (ECB only) with multiple padding choice;")
+    parser = ArgumentParser(description=''.join(descr), formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('--version', action='version', version="%(prog)s 1.0")
     subparser = parser.add_subparsers(dest="cmd")
 
