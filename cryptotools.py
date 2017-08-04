@@ -6,6 +6,8 @@ from argparse import ArgumentParser, ArgumentError
 
 from RSA.rsa import *
 from RSA.factorizer import Factorizer, Algo
+from AES.aes import *
+from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
 
 def handle_rsa(args):
@@ -47,6 +49,13 @@ def handle_rsa(args):
         r = RSA(args.p, args.q, args.e)
         pub, priv = r.gen_keys()
         return pub.encrypt(args.m.encode())
+
+def handle_aes(args):
+    aes = AES(args.key.encode(), Mode[args.mode], Padding[args.padding])
+    if args.action == "encrypt":
+        return aes.encrypt(args.m.encode())
+    elif args.action == "decrypt":
+        return aes.decrypt(args.c)
 
 # -------------------------------------------------------------------------- #
 
@@ -121,17 +130,27 @@ if __name__ == "__main__":
     hastadsub.add_argument("-c", type=parse_int, nargs="+", required=True,
             help="list of ciphertexts")
 
+    # AES args
+    key_argp = ArgumentParser(add_help=False)
+    key_argp.add_argument("-k", "--key", required=True, help="secret key (16, 24 or 32 bytes)")
+    mode_argp = ArgumentParser(add_help=False)
+    mode_argp.add_argument("--mode", default="ECB", choices=[e.name for e in Mode],
+            help="blockcipher encryption mode [ECB]")
+    pad_argp = ArgumentParser(add_help=False)
+    pad_argp.add_argument("--padding", default="PKCS7", choices=[e.name for e in Padding],
+            help="Padding method [PKCS7]")
+
     # AES parser
     aesparser = subparser.add_parser("aes", help="AES-[128|192|224] encryption")
     aessubs = aesparser.add_subparsers(dest="action")
-    aessubs.add_parser("decrypt", help="decrypt c with private key (n, d)")
-    aessubs.add_parser("encrypt", help="encrypt m with public key (n, e)")
+    decsub = aessubs.add_parser("decrypt", parents=[key_argp, mode_argp, pad_argp],
+            help="decrypt c with key k")
+    decsub.add_argument("-c", required=True, help="ciphertext")
+    encsub = aessubs.add_parser("encrypt", parents=[key_argp, mode_argp, pad_argp],
+            help="encrypt m with key k")
+    encsub.add_argument("-m", required=True, help="plaintext")
 
-    # Parse command line
-    # if len(sys.argv[1:])==0:
-    #     parser.print_usage()
-    #     parser.exit()
-
+    # Parse args
     args = parser.parse_args()
     if args.cmd == "rsa":
         print(handle_rsa(args))

@@ -26,7 +26,7 @@ class AES:
         plain = self._pad(plain)
         for offset in range(0, len(plain), 16):
             parts.append(self._encrypt_core(plain[offset:offset+16], self.key))
-        return b"".join(parts)
+        return "".join(parts)
 
     def _encrypt_core(self, plain, key):
         matrix = AES_Matrix(str_to_matrix(plain))
@@ -40,10 +40,11 @@ class AES:
         matrix.sub_bytes()
         matrix.shift_rows()
         matrix.add_roundkey(expkey, self._rounds)
-        return matrix_to_str(matrix.state)
+        return matrix_to_str(matrix.state).hex()
 
     def decrypt(self, cipher):
         parts = []
+        cipher = bytes.fromhex(cipher)
         for offset in range(0, len(cipher), 16):
             parts.append(self._decrypt_core(cipher[offset:offset+16], self.key))
         return self._unpad(b"".join(parts))
