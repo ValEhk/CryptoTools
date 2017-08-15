@@ -29,8 +29,8 @@ def handle_rsa(args):
         p, q, d = wiener(pubk)
         priv = PrivKey(args.n, d)
         return priv.decrypt(args.c)
-    elif args.action == "factorize":
-        f = Factorizer(Algo[args.algo])
+    elif args.action == "crack":
+        f = Factorizer(Algo[args.algo], args.limit)
         pq = f.factorize(args.n)
         r = RSA(pq[0], pq[1], args.e)
         pub, priv = r.gen_keys()
@@ -64,7 +64,7 @@ def parse_int(value):
 
 # TODO ceasar cipher
 # TODO vigenere
-# TODO change descr
+# TODO factorize only
 if __name__ == "__main__":
     descr = ("Cryptotools is a small python tool providing a quick and easy ",
         "way to complete the basic cryptography challenges commonly found during CTFs.",
@@ -114,11 +114,13 @@ if __name__ == "__main__":
             help="encrypt m with primes p and q")
     rsasubs.add_parser("eroot", parents=[e_argp, c_argp],
             help="compute the eth-root of c (big n, small e)")
-    factsub = rsasubs.add_parser("factorize", parents=[n_argp, e_argp, c_argp],
-            help="factorize n to decrypt c")
+    factsub = rsasubs.add_parser("crack", parents=[n_argp, e_argp, c_argp],
+            help="try to factorize n to decrypt c")
     factsub.add_argument("--algo", default="FACTORDB",
             choices=[e.name for e in Algo],
             help="algorithm used to factorize n [FACTORDB]")
+    factsub.add_argument("--limit", default=10000,
+            help="maximum number of tries (SMALL_PRIMES and FERMAT only) [10000]")
     rsasubs.add_parser("wiener", parents=[n_argp, e_argp, c_argp],
             help="Wiener's attack (d small)")
     commonsub = rsasubs.add_parser("common", parents=[n_argp],
