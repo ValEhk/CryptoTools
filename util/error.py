@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 class FactorizationError(Exception):
-    """General factorization error"""
+    """General factorization error."""
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -11,17 +11,17 @@ class FactordbError(FactorizationError):
     pass
 
 class UnitWarning(UserWarning):
-    """Factorization of 1"""
+    """Factorization of 1."""
     pass
 
 class FactorizationWarning(UserWarning):
-    """Unknown, incomplete or trivial factorization"""
+    """Unknown, incomplete or trivial factorization."""
     pass
 
 # -------------------------------------------------------------------------- #
 
 class RSAError(Exception):
-    """General RSA Error"""
+    """General RSA Error."""
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -37,7 +37,7 @@ class CommonModError(RSAError):
 # -------------------------------------------------------------------------- #
 
 class GF28Error(Exception):
-    """General error occuring when computing values in GF(2^8)"""
+    """General error occuring when computing values in GF(2^8)."""
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -46,7 +46,7 @@ class GF28Error(Exception):
 # -------------------------------------------------------------------------- #
 
 class AESError(Exception):
-    """General AES Error"""
+    """General AES Error."""
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -55,7 +55,7 @@ class AESError(Exception):
 # -------------------------------------------------------------------------- #
 
 class PaddingError(Exception):
-    """Error raised when an invalid PKCS7 or ANSI X.923 has been detected"""
+    """Error raised when an invalid PKCS7 or ANSI X.923 has been detected."""
     def __init__(self, value):
         self.value = value
     def __str__(self):

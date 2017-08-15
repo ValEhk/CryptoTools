@@ -27,10 +27,10 @@ class RSA:
         self.pubkey = None
 
     def __repr__(self):
-        return "RSA(%d, %d, %e)" % (self.p, self.q, self.e)
+        return "RSA({:d}, {:d}, {:d})".format(self.p, self.q, self.e)
 
     def __str__(self):
-        return "-- RSA --\n    p: %d\n    q: %d\n    e: %d" % (self.p, self.q, self.d)
+        return "-- RSA --\n    p: {:d}\n    q: {:d}\n    e: {:d}".format(self.p, self.q, self.d)
 
 
     def gen_keys(self):
@@ -64,7 +64,7 @@ class PubKey():
         self.e = e
 
     def __repr__(self):
-        return "PubKey(%d, %d)" % (self.n, self.e)
+        return "PubKey({:d}, {:d})".format(self.n, self.e)
 
     def encrypt(self, plainstr):
         """Encrypt plain with self."""
@@ -81,7 +81,7 @@ class PrivKey():
         self.d = d
 
     def __repr__(self):
-        return "PrivKey(%d, %d)" % (self.n, self.d)
+        return "PrivKey({:d}, {:d})".format(self.n, self.d)
 
     def decrypt(self, cipher):
         """Decrypt cipher with self."""
@@ -150,7 +150,7 @@ def hastad(pks, cs):
     pks -- list of public keys
     cs -- list of ciphertexts (int)
     Output:
-    m -- plaintext (int)
+    m -- plaintext (bytes)
     """
     _check(pks, cs)
     prod = 1
@@ -182,7 +182,7 @@ def common_modulus(pk1, pk2, c1, c2):
     pk1, pk2 -- public keys
     c1, c2 -- ciphertexts (int)
     Output:
-    m -- plaintext (int)
+    m -- plaintext (bytes)
     """
     if pk1.n != pk2.n:
         raise CommonModError("Different modulus 'n1' and 'n2'")

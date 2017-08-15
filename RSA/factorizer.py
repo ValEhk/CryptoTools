@@ -24,13 +24,13 @@ class Algo(IntEnum):
 # -------------------------------------------------------------------------- #
 
 class Factorizer:
-    def __init__(self, algo=Algo.FACTORDB, limit=100000):
+    def __init__(self, algo=Algo.FACTORDB, limit=10000):
         """Wrapper for several integer factorization algorithms.
 
         Keyword arguments:
         algo -- algorithm used for the factorization (default Algo.FACTORDB)
         limit -- limit in _small_primes and _fermat. This prevents the algorithm
-            to run for a long time when factorizing arbitrarily large numbers (default 1000)
+            to run for a long time when factorizing arbitrarily large numbers (default 10000)
         """
         self.algo = algo
         self.limit = limit;
@@ -39,10 +39,10 @@ class Factorizer:
                 self._mersenne, self._woodall]
 
     def __repr__(self):
-        return "Factorizer(%s, %s)" % (self.algo, self.limit)
+        return "Factorizer({}, {:d})".format(self.algo, self.limit)
 
     def __str__(self):
-        return "** Factorizer **\n    algo: %s\n    limit: %s" % (self.algo, self.limit)
+        return "** Factorizer **\n    algo: {}\n    limit: {:d}".format(self.algo, self.limit)
 
 
     def factorize(self, n):

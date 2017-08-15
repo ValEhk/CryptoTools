@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-# TODO comments
 from util.error import GF28Error
 
 _logtable = None
 _antilogtable = None
 
 def _gen_tables():
+    """Generate GF(2^8) _logtable and _antilogtable with 3 as generator."""
     global _logtable, _antilogtable
     _logtable = [0 for i in range(256)]
     _antilogtable = [0 for i in range(255)]
@@ -18,10 +18,11 @@ def _gen_tables():
         x = multiply(x, generator)
 
 def add(x, y):
+    """Add x and y in GF(2^8)."""
     return x^y
 
 def multiply(x, y):
-    """Number multiplication in GF(2^8)."""
+    """Multiply x and y in GF(2^8)."""
     res, carry = 0, 0
     for i in range(8):
         if y & 0x1:
@@ -34,13 +35,14 @@ def multiply(x, y):
 
 
 def _matrix_substep(leftop, rightop):
+    """Matrix multiplication core."""
     res = 0
     for i in range(len(leftop)):
         res ^= multiply(leftop[i], rightop[i])
     return res
 
 def matrix_multiply(x, y):
-    """Matrix multiplication in GF(2^8)."""
+    """Multiply matrices x and y in GF(2^8)."""
     if len(x) != len(y[0]) or len(x[0]) != len(y):
         raise GF28Error("Matrices' sizes not matching")
     msize = len(x)
@@ -53,6 +55,7 @@ def matrix_multiply(x, y):
     return res
 
 def invert(n):
+    """Return the inverse of n in GF(2^8)."""
     if n < 0 or n > 255:
         raise GF28Error("Unsupported value")
     if n == 0:

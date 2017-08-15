@@ -5,12 +5,17 @@ from util.blockcipher import Mode, Padding
 from util.convert import *
 from util.error import AESError, PaddingError
 
-# TODO comments
-# TODO check + eveythin sur aes
 _nbrounds = {16: 10, 24:12, 32:14}
 
 class AES:
     def __init__(self, key, mode, padding=Padding.PKCS7, iv=None):
+        """AES encryption
+
+        Keyword arguments:
+        key -- symmetric key
+        padding -- padding method used (default PKCS7)
+        iv -- initialisation vector (CBC only)
+        """
         self.key = key
         self.keylen = len(key)
         try:
@@ -18,10 +23,18 @@ class AES:
         except KeyError:
             raise AESError("Invalid key length (must be 16, 24 or 32 bytes)")
         self.mode = mode
-        self.iv = iv
         self.padding = padding
+        self.iv = iv
+
+    def __repr__(self):
+        return "AES({}, {}, {})".format(self.key, self.padding, self.iv)
+
+    def __str__(self):
+        return "-- AES --\n    key: {}\n    padding: {}\n    IV: {}".format(self.key, self.padding, self.iv)
+
 
     def encrypt(self, plain):
+        """Encrypt plain with self."""
         parts = []
         plain = self._pad(plain)
         for offset in range(0, len(plain), 16):
@@ -29,6 +42,7 @@ class AES:
         return "".join(parts)
 
     def _encrypt_core(self, plain, key):
+        """AES encryption loop for each block."""
         matrix = AES_Matrix(str_to_matrix(plain))
         expkey = expand_key(key)
         matrix.add_roundkey(expkey, 0)
@@ -42,7 +56,9 @@ class AES:
         matrix.add_roundkey(expkey, self._rounds)
         return matrix_to_str(matrix.state).hex()
 
+
     def decrypt(self, cipher):
+        """Decrypt cipher with self."""
         parts = []
         cipher = bytes.fromhex(cipher)
         for offset in range(0, len(cipher), 16):
@@ -50,6 +66,7 @@ class AES:
         return self._unpad(b"".join(parts))
 
     def _decrypt_core(self, cipher, key):
+        """AES decryption loop for each block."""
         matrix = AES_Matrix(str_to_matrix(cipher))
         expkey = expand_key(key)
         matrix.add_roundkey(expkey, self._rounds)
@@ -63,7 +80,9 @@ class AES:
         matrix.add_roundkey(expkey, 0)
         return matrix_to_str(matrix.state)
 
+
     def _pad(self, text):
+        """Pad text with the chosen padding scheme."""
         padlen = 16 - len(text)%16
         if self.padding == Padding.ZERO:
             text += b"\x00"*padlen
@@ -84,6 +103,7 @@ class AES:
         return text
 
     def _unpad(self, text):
+        """Unpad text with the chosen padding scheme."""
         if self.padding == Padding.ZERO:
             while text[-1] == 0:
                 text = text[:-1]
