@@ -5,7 +5,7 @@ import gmpy2
 from argparse import ArgumentParser, ArgumentError, RawDescriptionHelpFormatter
 
 from RSA.rsa import *
-from RSA.factorizer import Factorizer, Algo
+from factorizer.factorizer import Factorizer, Algo
 from AES.aes import *
 from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
