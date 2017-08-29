@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from AES.aesutil import *
+from symmetric.aesutil import *
 from util.blockcipher import Mode, Padding
 from util.convert import *
 from util.error import AESError, PaddingError

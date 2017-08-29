@@ -4,8 +4,8 @@ import binascii
 from unittest import TestCase
 from Crypto.Cipher import AES as pyAES
 
-from AES.aes import *
-from AES.aesutil import *
+from symmetric.aes import *
+from symmetric.aesutil import *
 from util.blockcipher import Mode, Padding
 
 class TestAES128_ECB(TestCase):

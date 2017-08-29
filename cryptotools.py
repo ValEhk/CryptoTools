@@ -4,9 +4,9 @@ import sys
 import gmpy2
 from argparse import ArgumentParser, ArgumentError, RawDescriptionHelpFormatter
 
-from RSA.rsa import *
+from asymmetric.rsa import *
 from factorizer.factorizer import Factorizer, Algo
-from AES.aes import *
+from symmetric.aes import *
 from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
 

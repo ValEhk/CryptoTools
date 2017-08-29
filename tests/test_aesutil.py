@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from AES.aesutil import *
+from symmetric.aesutil import *
 
 class TestSteps(TestCase):
     def test_key_sched(self):

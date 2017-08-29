@@ -71,8 +71,8 @@ class PubKey():
     def __repr__(self):
         return "PubKey({:d}, {:d})".format(self.n, self.e)
 
-    def encrypt(self, plain):
-        """Encrypt 'plain' [bytes] and return the corresponding ciphertext [int]."""
+    def encrypt(self, plainstr):
+        """Encrypt 'plainstr' [bytes] and return the corresponding ciphertext [int]."""
         plain = str_to_hex(plainstr)
         cipher = pow(plain, self.e, self.n)
         return cipher

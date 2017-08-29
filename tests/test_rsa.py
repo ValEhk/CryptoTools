@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from RSA.rsa import *
+from asymmetric.rsa import *
 from util.convert import hex_to_str
 
 class TestGen(TestCase):
