@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import sys
-
 import gmpy2
 
 from util.error import RSAError, WienerError, HastadError, CommonModError

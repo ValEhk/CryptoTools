@@ -66,7 +66,7 @@ def parse_int(value):
 # TODO vigenere
 # TODO factorize only
 if __name__ == "__main__":
-    descr = ("Cryptotools is a small python tool providing a quick and easy ",
+    descr = ("CryptoTools is a small python tool providing a quick and easy ",
         "way to complete the basic cryptography challenges commonly found during CTFs.",
         "\n\nCurrently available are:",
         "\n    * RSA basic encryption/decryption;",

@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import imp
-import math
 import warnings
 from enum import IntEnum
 

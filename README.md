@@ -1,51 +1,36 @@
-# Crypto-CTF
+# CryptoTools
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-%% TODO this is old stuff, must be rewritten
-
-Crypto-CTF is a small python tool providing a quick and easy way to complete the basic cryptography challenges commonly found during CTFs.  
+CryptoTools is a small python tool providing a quick and easy way to complete the basic cryptography challenges commonly found during CTFs.
 It can also be used to simply encrypt/decrypt messages, although it is likely not as good as the "official" encryption packages.
 
-_Currently, only RSA is available. Stay tuned for more._
+Currently available are:
+* RSA basic encryption/decryption;
+* common RSA attacks such as Wiener, Hastad or common modulus;
+* AES-128, AES-192, AES-224 (ECB only) with multiple padding choice;
 
 
 Usage
 -----
-    usage: crypto-ctf.py [-h] [--version] {rsa} ... FILE [FILE ...]
-
-    Crypto-CTF is a small python tool providing a quick and easy way to complete
-    the basic cryptography challenges commonly found during CTFs.
+    usage: cryptotools.py [-h] [--version] {rsa,aes} ...
 
     positional arguments:
-    {rsa}       encryption method used
-    FILE        input file (refer to README.md for more details)
+      {rsa,aes}
+        rsa       RSA cryptosystem
+        aes       AES-[128|192|224] encryption
 
     optional arguments:
-    -h, --help  show this help message and exit
-    --version   show program's version number and exit
+      -h, --help  show this help message and exit
+      --version   show program's version number and exit
 
-
-Input file
-----------
-The input file must be made of lines respecting the following syntax:
-
-> _id_ **=** _number_
-    
-with _id_ being one of the following: m, c, n, d, e, p or q.  
-The _number_ value can be expressed either in decimal or in hexadecimal. Blank lines are not allowed and will result in a crash.
-
-Depending on what you want to do, you don't have to put the same identifiers in the input file.  
-If some identifiers are missing, the program will stop with a `KeyError`. If more identifiers than required are provided, the programm will probably do something that will depend on the order of the given identifiers.
+Additional help can be found by using the option `-help` or `-h` with a specific subcommand.
 
 
 Required packages
 -----------------
 - `argparse`
-- `gmpy2`  
-
-Additionally, other packages might be required depending on what you want to do:
-- `sympy` if you want to use the _sympy_ built_in factorization function
-- `urllib`, `bs4` and `parsimonious` if you use [factordb](http://factordb.com/)
+- `gmpy2`
+- `urllib`, `bs4` and `parsimonious` for the factorization with [factordb](http://factordb.com/)
 
 
 License
