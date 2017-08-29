@@ -79,28 +79,18 @@ if __name__ == "__main__":
     # RSA args
     rsaparser = subparser.add_parser("rsa", help="RSA cryptosystem")
     pq_argp = ArgumentParser(add_help=False)
-    pq_argp.add_argument("-p", type=parse_int, required=True, help="first prime number")
-    pq_argp.add_argument("-q", type=parse_int, required=True, help="second prime number")
+    pq_argp.add_argument("-p", type=parse_int, required=True, help="first prime number [int]")
+    pq_argp.add_argument("-q", type=parse_int, required=True, help="second prime number [int]")
     n_argp = ArgumentParser(add_help=False)
-    n_argp.add_argument("-n", type=parse_int, required=True, help="modulus")
+    n_argp.add_argument("-n", type=parse_int, required=True, help="modulus [int]")
     e_argp = ArgumentParser(add_help=False)
-    e_argp.add_argument("-e", type=parse_int, required=True, default=65537, help="public exponent")
+    e_argp.add_argument("-e", type=parse_int, required=True, default=65537, help="public exponent [int]")
     d_argp = ArgumentParser(add_help=False)
-    d_argp.add_argument("-d", type=parse_int, required=True, help="private exponent")
+    d_argp.add_argument("-d", type=parse_int, required=True, help="private exponent [int]")
     c_argp = ArgumentParser(add_help=False)
-    c_argp.add_argument("-c", type=parse_int, required=True, help="ciphertext")
+    c_argp.add_argument("-c", type=parse_int, required=True, help="ciphertext [int]")
     m_argp = ArgumentParser(add_help=False)
-    m_argp.add_argument("-m", required=True, help="plaintext")
-    nlist_argp = ArgumentParser(add_help=False)
-    nlist_argp.add_argument("-N", type=parse_int, nargs="+", required=True, help="list of moduli")
-    e2_argp = ArgumentParser(add_help=False)
-    e2_argp.add_argument("-e", type=parse_int, nargs=2, required=True, help="list of public exponents")
-    c2_argp = ArgumentParser(add_help=False)
-    c2_argp.add_argument("-C", type=parse_int, nargs=2, required=True, help="list of ciphertexts")
-    elist_argp = ArgumentParser(add_help=False)
-    elist_argp.add_argument("-E", type=parse_int, nargs="+", required=True, help="list of public exponents")
-    clist_argp = ArgumentParser(add_help=False)
-    clist_argp.add_argument("-C", type=parse_int, nargs="+", required=True, help="list of ciphertexts")
+    m_argp.add_argument("-m", required=True, help="plaintext [string]")
 
     # RSA parser
     rsasubs = rsaparser.add_subparsers(dest="action")
@@ -118,43 +108,43 @@ if __name__ == "__main__":
             help="try to factorize n to decrypt c")
     factsub.add_argument("--algo", default="FACTORDB",
             choices=[e.name for e in Algo],
-            help="algorithm used to factorize n [FACTORDB]")
+            help="algorithm used to factorize n (default FACTORDB)")
     factsub.add_argument("--limit", default=10000,
-            help="maximum number of tries (SMALL_PRIMES and FERMAT only) [10000]")
+            help="maximum number of tries (SMALL_PRIMES and FERMAT only) (default 10000)")
     rsasubs.add_parser("wiener", parents=[n_argp, e_argp, c_argp],
             help="Wiener's attack (d small)")
     commonsub = rsasubs.add_parser("common", parents=[n_argp],
             help="common modulus attack (same n, same m)")
     commonsub.add_argument("-e", type=parse_int, nargs=2, required=True,
-            help="public exponents")
+            help="two public exponents [int]")
     commonsub.add_argument("-c", type=parse_int, nargs=2, required=True,
-            help="ciphertexts")
+            help="two ciphertexts [int]")
     hastadsub = rsasubs.add_parser("hastad", parents=[e_argp],
             help="Hastad's attack (same m sent e times)")
     hastadsub.add_argument("-n", type=parse_int, nargs="+", required=True,
-            help="list of moduli")
+            help="list of moduli [List<int>]")
     hastadsub.add_argument("-c", type=parse_int, nargs="+", required=True,
-            help="list of ciphertexts")
+            help="list of ciphertexts [List<int>]")
 
     # AES args
     key_argp = ArgumentParser(add_help=False)
-    key_argp.add_argument("-k", "--key", required=True, help="secret key (16, 24 or 32 bytes)")
+    key_argp.add_argument("-k", "--key", required=True, help="secret key [string] (16, 24 or 32 bytes)")
     mode_argp = ArgumentParser(add_help=False)
     mode_argp.add_argument("--mode", default="ECB", choices=[e.name for e in Mode],
-            help="blockcipher encryption mode [ECB]")
+            help="blockcipher encryption mode (default ECB)")
     pad_argp = ArgumentParser(add_help=False)
     pad_argp.add_argument("--padding", default="PKCS7", choices=[e.name for e in Padding],
-            help="Padding method [PKCS7]")
+            help="Padding method (default PKCS7)")
 
     # AES parser
     aesparser = subparser.add_parser("aes", help="AES-[128|192|224] encryption")
     aessubs = aesparser.add_subparsers(dest="action")
     decsub = aessubs.add_parser("decrypt", parents=[key_argp, mode_argp, pad_argp],
             help="decrypt c with key k")
-    decsub.add_argument("-c", required=True, help="ciphertext")
+    decsub.add_argument("-c", required=True, help="ciphertext [hex string]")
     encsub = aessubs.add_parser("encrypt", parents=[key_argp, mode_argp, pad_argp],
             help="encrypt m with key k")
-    encsub.add_argument("-m", required=True, help="plaintext")
+    encsub.add_argument("-m", required=True, help="plaintext [string]")
 
     # Parse args
     args = parser.parse_args()

@@ -157,8 +157,8 @@ def hastad(pks, cs):
     """Hastad's attack (same 'm' sent 'e' times)
 
     Keyword arguments:
-    pks [PubKey] -- list of public keys
-    cs [int] -- list of ciphertexts
+    pks [List<PubKey>] -- list of public keys
+    cs [List<int>] -- list of ciphertexts
     Output:
     m [bytes] -- plaintext
     """

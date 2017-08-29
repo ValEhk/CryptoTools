@@ -12,9 +12,9 @@ class AES:
         """AES encryption
 
         Keyword arguments:
-        key -- symmetric key
-        padding -- padding method used (default PKCS7)
-        iv -- initialisation vector (CBC only)
+        key [bytes] -- symmetric key
+        padding [IntEnum.Padding] -- padding method used (default PKCS7)
+        iv [bytes] -- initialisation vector (CBC only)
         """
         self.key = key
         self.keylen = len(key)
@@ -30,11 +30,11 @@ class AES:
         return "AES({}, {}, {})".format(self.key, self.padding, self.iv)
 
     def __str__(self):
-        return "-- AES --\n    key: {}\n    padding: {}\n    IV: {}".format(self.key, self.padding, self.iv)
+        return "AES\n  key: {}\n  padding: {}\n  IV: {}".format(self.key, self.padding, self.iv)
 
 
     def encrypt(self, plain):
-        """Encrypt plain with self."""
+        """Encrypt 'plain' [bytes] and return the corresponding ciphertext [hex string]."""
         parts = []
         plain = self._pad(plain)
         for offset in range(0, len(plain), 16):
@@ -58,7 +58,7 @@ class AES:
 
 
     def decrypt(self, cipher):
-        """Decrypt cipher with self."""
+        """Decrypt 'cipher' [hex string] and return the corresponding plaintext [bytes]."""
         parts = []
         cipher = bytes.fromhex(cipher)
         for offset in range(0, len(cipher), 16):
@@ -82,7 +82,7 @@ class AES:
 
 
     def _pad(self, text):
-        """Pad text with the chosen padding scheme."""
+        """Pad 'text' [bytes] with the chosen padding scheme."""
         padlen = 16 - len(text)%16
         if self.padding == Padding.ZERO:
             text += b"\x00"*padlen
@@ -103,7 +103,7 @@ class AES:
         return text
 
     def _unpad(self, text):
-        """Unpad text with the chosen padding scheme."""
+        """Unpad 'text' [bytes] with the chosen padding scheme."""
         if self.padding == Padding.ZERO:
             while text[-1] == 0:
                 text = text[:-1]
