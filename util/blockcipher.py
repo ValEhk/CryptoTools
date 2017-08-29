@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from enum import IntEnum
 
 class Mode(IntEnum):
