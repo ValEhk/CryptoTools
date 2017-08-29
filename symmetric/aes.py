@@ -1,16 +1,21 @@
 #!/usr/bin/env python3
 
-from AES.aesutil import *
+from symmetric.aesutil import *
 from util.blockcipher import Mode, Padding
 from util.convert import *
 from util.error import AESError, PaddingError
 
-# TODO comments
-# TODO check + eveythin sur aes
 _nbrounds = {16: 10, 24:12, 32:14}
 
 class AES:
     def __init__(self, key, mode, padding=Padding.PKCS7, iv=None):
+        """AES encryption
+
+        Keyword arguments:
+        key [bytes] -- symmetric key
+        padding [IntEnum.Padding] -- padding method used (default PKCS7)
+        iv [bytes] -- initialisation vector (CBC only)
+        """
         self.key = key
         self.keylen = len(key)
         try:
@@ -18,17 +23,26 @@ class AES:
         except KeyError:
             raise AESError("Invalid key length (must be 16, 24 or 32 bytes)")
         self.mode = mode
-        self.iv = iv
         self.padding = padding
+        self.iv = iv
+
+    def __repr__(self):
+        return "AES({}, {}, {})".format(self.key, self.padding, self.iv)
+
+    def __str__(self):
+        return "AES\n  key: {}\n  padding: {}\n  IV: {}".format(self.key, self.padding, self.iv)
+
 
     def encrypt(self, plain):
+        """Encrypt 'plain' [bytes] and return the corresponding ciphertext [hex string]."""
         parts = []
         plain = self._pad(plain)
         for offset in range(0, len(plain), 16):
             parts.append(self._encrypt_core(plain[offset:offset+16], self.key))
-        return b"".join(parts)
+        return "".join(parts)
 
     def _encrypt_core(self, plain, key):
+        """AES encryption loop for each block."""
         matrix = AES_Matrix(str_to_matrix(plain))
         expkey = expand_key(key)
         matrix.add_roundkey(expkey, 0)
@@ -40,15 +54,19 @@ class AES:
         matrix.sub_bytes()
         matrix.shift_rows()
         matrix.add_roundkey(expkey, self._rounds)
-        return matrix_to_str(matrix.state)
+        return matrix_to_str(matrix.state).hex()
+
 
     def decrypt(self, cipher):
+        """Decrypt 'cipher' [hex string] and return the corresponding plaintext [bytes]."""
         parts = []
+        cipher = bytes.fromhex(cipher)
         for offset in range(0, len(cipher), 16):
             parts.append(self._decrypt_core(cipher[offset:offset+16], self.key))
         return self._unpad(b"".join(parts))
 
     def _decrypt_core(self, cipher, key):
+        """AES decryption loop for each block."""
         matrix = AES_Matrix(str_to_matrix(cipher))
         expkey = expand_key(key)
         matrix.add_roundkey(expkey, self._rounds)
@@ -62,7 +80,9 @@ class AES:
         matrix.add_roundkey(expkey, 0)
         return matrix_to_str(matrix.state)
 
+
     def _pad(self, text):
+        """Pad 'text' [bytes] with the chosen padding scheme."""
         padlen = 16 - len(text)%16
         if self.padding == Padding.ZERO:
             text += b"\x00"*padlen
@@ -83,6 +103,7 @@ class AES:
         return text
 
     def _unpad(self, text):
+        """Unpad 'text' [bytes] with the chosen padding scheme."""
         if self.padding == Padding.ZERO:
             while text[-1] == 0:
                 text = text[:-1]

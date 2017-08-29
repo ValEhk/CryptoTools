@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 
@@ -12,9 +12,9 @@ class RSA:
         """RSA encryption (cf. https://en.wikipedia.org/wiki/RSA_(cryptosystem)).
 
         Keyword arguments:
-        p -- first prime used to generate RSA keys
-        q -- second prime used to generate RSA keys
-        e -- public exponent (default 65537)
+        p [int] -- first prime used to generate RSA keys
+        q [int] -- second prime used to generate RSA keys
+        e [int] -- public exponent (default 65537)
         """
         self.p = gmpy2.mpz(p)
         if not gmpy2.is_prime(self.p):
@@ -27,10 +27,10 @@ class RSA:
         self.pubkey = None
 
     def __repr__(self):
-        return "RSA(%d, %d, %e)" % (self.p, self.q, self.e)
+        return "RSA({:d}, {:d}, {:d})".format(self.p, self.q, self.e)
 
     def __str__(self):
-        return "-- RSA --\n    p: %d\n    q: %d\n    e: %d" % (self.p, self.q, self.d)
+        return "RSA\n  p: {:d}\n  q: {:d}\n  e: {:d}".format(self.p, self.q, self.d)
 
 
     def gen_keys(self):
@@ -59,15 +59,20 @@ class RSA:
 
 class PubKey():
     def __init__(self, n, e):
-        """RSA public key."""
+        """RSA public key
+
+        Keyword arguments:
+        n [int] -- modulus
+        e [int] -- public exponent
+        """
         self.n = n
         self.e = e
 
     def __repr__(self):
-        return "PubKey(%d, %d)" % (self.n, self.e)
+        return "PubKey({:d}, {:d})".format(self.n, self.e)
 
     def encrypt(self, plainstr):
-        """Encrypt plain with self."""
+        """Encrypt 'plainstr' [bytes] and return the corresponding ciphertext [int]."""
         plain = str_to_hex(plainstr)
         cipher = pow(plain, self.e, self.n)
         return cipher
@@ -76,15 +81,20 @@ class PubKey():
 
 class PrivKey():
     def __init__(self, n, d):
-        """RSA private key."""
+        """RSA private key
+
+        Keyword arguments:
+        n [int] -- modulus
+        d [int] -- private exponent
+        """
         self.n = n
         self.d = d
 
     def __repr__(self):
-        return "PrivKey(%d, %d)" % (self.n, self.d)
+        return "PrivKey({:d}, {:d})".format(self.n, self.d)
 
     def decrypt(self, cipher):
-        """Decrypt cipher with self."""
+        """Decrypt 'cipher' [int] and return the corresponding plaintext [bytes]."""
         plain = pow(cipher, self.d, self.n)
         return hex_to_str(plain)
 
@@ -94,11 +104,11 @@ def wiener(pk):
     """Wiener's attack (d small)
 
     Keyword arguments:
-    pk -- public key
+    pk [PubKey] -- public key
     Output:
-    p -- first factor of n (prime)
-    q -- second factor of n (prime)
-    d -- private exponent
+    p [int] -- first prime factor of n
+    q [int] -- second prime factor of n
+    d [int] -- private exponent
     """
     cf = _continued_frac(pk.e, pk.n)
     for c in _cvgs(cf):
@@ -135,7 +145,7 @@ def _convergent(coeffs):
     return 1/f
 
 def _cvgs(coeffs):
-    """Compute all intermediate convergents."""
+    """Compute all intermediate convergents of 'coeffs'."""
     i = 0
     while i < len(coeffs):
         yield _convergent(coeffs[:i+1])
@@ -147,10 +157,10 @@ def hastad(pks, cs):
     """Hastad's attack (same 'm' sent 'e' times)
 
     Keyword arguments:
-    pks -- list of public keys
-    cs -- list of ciphertexts (int)
+    pks [List<PubKey>] -- list of public keys
+    cs [List<int>] -- list of ciphertexts
     Output:
-    m -- plaintext (int)
+    m [bytes] -- plaintext
     """
     _check(pks, cs)
     prod = 1
@@ -160,7 +170,7 @@ def hastad(pks, cs):
     for pk,c in zip(pks, cs):
         p = prod//pk.n
         me += c * gmpy2.invert(p, pk.n) * p
-    return gmpy2.iroot(me % prod, pks[0].e)[0]
+    return hex_to_str(gmpy2.iroot(me % prod, pks[0].e)[0])
 
 def _check(pks, cs):
     """Check if Hastad's attack is possible with the given values."""
@@ -179,10 +189,10 @@ def common_modulus(pk1, pk2, c1, c2):
     """Common modulus attack (same 'm', same'n')
 
     Keyword arguments:
-    pk1, pk2 -- public keys
-    c1, c2 -- ciphertexts (int)
+    pk1, pk2 [PubKey] -- public keys
+    c1, c2 [int] -- ciphertexts
     Output:
-    m -- plaintext (int)
+    m [bytes] -- plaintext
     """
     if pk1.n != pk2.n:
         raise CommonModError("Different modulus 'n1' and 'n2'")
@@ -193,4 +203,4 @@ def common_modulus(pk1, pk2, c1, c2):
     inv_c2 = gmpy2.invert(c2, pk2.n)
     m1 = pow(c1, u, pk1.n)
     m2 = pow(inv_c2, -v, pk2.n)
-    return m1*m2 % pk1.n
+    return hex_to_str(m1*m2 % pk1.n)

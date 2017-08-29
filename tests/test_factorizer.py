@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from RSA.factorizer import *
+from factorizer.factorizer import *
 from util.error import UnitWarning, FactorizationError, FactordbError
 
 class TestGen(TestCase):

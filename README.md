@@ -1,6 +1,8 @@
 # Crypto-CTF
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+%% TODO this is old stuff, must be rewritten
+
 Crypto-CTF is a small python tool providing a quick and easy way to complete the basic cryptography challenges commonly found during CTFs.  
 It can also be used to simply encrypt/decrypt messages, although it is likely not as good as the "official" encryption packages.
 

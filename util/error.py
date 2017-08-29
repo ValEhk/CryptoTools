@@ -1,27 +1,28 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 class FactorizationError(Exception):
-    """General factorization error"""
+    """Generic factorization error."""
     def __init__(self, value):
         self.value = value
     def __str__(self):
         return self.value
 
 class FactordbError(FactorizationError):
+    """FactorDB error."""
     pass
 
 class UnitWarning(UserWarning):
-    """Factorization of 1"""
+    """Factorization of 1."""
     pass
 
 class FactorizationWarning(UserWarning):
-    """Unknown, incomplete or trivial factorization"""
+    """Unknown, incomplete or trivial factorization."""
     pass
 
 # -------------------------------------------------------------------------- #
 
 class RSAError(Exception):
-    """General RSA Error"""
+    """Generic RSA error."""
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -36,17 +37,8 @@ class CommonModError(RSAError):
 
 # -------------------------------------------------------------------------- #
 
-class FormatError(Exception):
-    """Error raised when the input file is not correctly formatted"""
-    def __init__(self, value):
-        self.value = value
-    def __str__(self):
-        return self.value
-
-# -------------------------------------------------------------------------- #
-
 class GF28Error(Exception):
-    """General error occuring when computing values in GF(2^8)"""
+    """Generic GF(2^8) operations error."""
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -55,7 +47,7 @@ class GF28Error(Exception):
 # -------------------------------------------------------------------------- #
 
 class AESError(Exception):
-    """General AES Error"""
+    """Generic AES error."""
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -64,7 +56,7 @@ class AESError(Exception):
 # -------------------------------------------------------------------------- #
 
 class PaddingError(Exception):
-    """Error raised when an invalid PKCS7 or ANSI X.923 has been detected"""
+    """Invalid PKCS7 or ANSI X.923 padding detected."""
     def __init__(self, value):
         self.value = value
     def __str__(self):

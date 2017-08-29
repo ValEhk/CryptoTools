@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import re
 
 import urllib.request as urlreq
@@ -63,6 +65,7 @@ class FDBParser(NodeVisitor):
         pass
 
 def get_factors(n):
+    """Query factordb.com to get factors of n."""
     try:
         url = _fdb_url + "index.php?query=" + str(n)
         res = urlreq.urlopen(url)

@@ -2,8 +2,8 @@
 
 import util.gf28 as gf28
 from util.convert import str_to_hexarray
-# TODO comments
 
+# AES S-Box
 _sbox = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67,
         0x2b, 0xfe, 0xd7, 0xab, 0x76, 0xca, 0x82, 0xc9, 0x7d, 0xfa, 0x59, 0x47,
         0xf0, 0xad, 0xd4, 0xa2, 0xaf, 0x9c, 0xa4, 0x72, 0xc0, 0xb7, 0xfd, 0x93,
@@ -26,6 +26,7 @@ _sbox = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01, 0x67,
         0x11, 0x69, 0xd9, 0x8e, 0x94, 0x9b, 0x1e, 0x87, 0xe9, 0xce, 0x55, 0x28,
         0xdf, 0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d,
         0x0f, 0xb0, 0x54, 0xbb, 0x16]
+# AES inverse S-Box
 _invsbox = [0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3,
         0x9e, 0x81, 0xf3, 0xd7, 0xfb, 0x7c, 0xe3, 0x39, 0x82, 0x9b, 0x2f, 0xff,
         0x87, 0x34, 0x8e, 0x43, 0x44, 0xc4, 0xde, 0xe9, 0xcb, 0x54, 0x7b, 0x94,
@@ -50,6 +51,7 @@ _invsbox = [0x52, 0x09, 0x6a, 0xd5, 0x30, 0x36, 0xa5, 0x38, 0xbf, 0x40, 0xa3,
         0x63, 0x55, 0x21, 0x0c, 0x7d]
 
 def _initialize_sbox():
+    """Generate AES S-Box and inverse S-Box."""
     global _sbox, _invsbox
     _sbox = [0 for i in range(256)]
     _invsbox = [0 for i in range(256)]
@@ -69,6 +71,7 @@ _rcon = [0x8d, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36,
         0x6a, 0xd4, 0xb3, 0x7d, 0xfa, 0xef, 0xc5, 0x91, 0x39]
 
 def _initialize_rcon():
+    """Generate Rcon array for Rijndael key schedule."""
     global _rcon
     _rcon = [0 for i in range(32)]
     value = 0x8d
@@ -82,13 +85,14 @@ _explen = {16:176, 24:208, 32:240}
 _reloop = {16:0, 24:2, 32:3}
 
 def xor_lists(l1, l2):
-#     TODO itertools? + move dans util
+    """Xor l1 and l2 element by element."""
     res = []
     for i in range(len(l1)):
         res.append(l1[i] ^ l2[i])
     return res
 
 def _keysched_core(expanded_key, idx_rcon):
+    """Rijndael keyschedule core."""
     res = expanded_key[-4:]
     res = res[1:] + res[:1]
     for i in range(4):
@@ -97,6 +101,7 @@ def _keysched_core(expanded_key, idx_rcon):
     return res
 
 def expand_key(key):
+    """Expand 'key' [bytes] using Rijndael key schedule and return the extended key [List<int>]."""
     keylen = len(key)
     expanded_key = str_to_hexarray(key)
     idx_rcon = 1
@@ -126,41 +131,50 @@ _invmds = [[14,11,13,9], [9,14,11,13], [13,9,14,11], [11,13,9,14]]
 
 class AES_Matrix:
     def __init__(self, init):
+        """AES internal state."""
         self.state = init
         self.cols = 4
         self.rows = 4
 
     def _get_subkey(self, expanded_key, round):
+        """Extract subkey for the chosen round from expanded_key."""
         offset = 16*round
         subkey = [expanded_key[offset+i:offset+16:4] for i in range(self.rows)]
         return subkey
 
     def add_roundkey(self, expanded_key, round):
+        """Xor self.state with the correct subkey of expanded_key."""
         rkey = self._get_subkey(expanded_key, round)
         for r in range(self.rows):
             for c in range(self.cols):
                 self.state[r][c] ^= rkey[r][c]
 
     def sub_bytes(self):
+        """Substitute self.state values using the AES S-Box."""
         for r in range(self.rows):
             for c in range(self.cols):
                 self.state[r][c] = _sbox[self.state[r][c]]
     def inv_sub_bytes(self):
+        """Substitute self.state values using the AES inverse S-Box."""
         for r in range(self.rows):
             for c in range(self.cols):
                 self.state[r][c] = _invsbox[self.state[r][c]]
 
     def mix_columns(self):
+        """Multiply self.state with the AES MDS matrix in GF(2^8)."""
         self.state = gf28.matrix_multiply(_mds, self.state)
     def inv_mix_columns(self):
+        """Multiply self.state with the AES inverse MDS matrix in GF(2^8)."""
         self.state = gf28.matrix_multiply(_invmds, self.state )
 
     def shift_rows(self):
+        """Left rotate rows of self.state (as defined in AES)."""
         for r in range(1, self.rows):
             tmp = self.state[r][:r]
             self.state[r][:self.cols-r] = self.state[r][r:]
             self.state[r][self.cols-r:] = tmp
     def inv_shift_rows(self):
+        """Right rotate rows of self.state (as defined in AES)."""
         for r in range(1, self.rows):
             tmp = self.state[r][self.cols-r:]
             self.state[r][r:] = self.state[r][:self.cols-r]

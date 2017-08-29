@@ -4,8 +4,8 @@ import binascii
 from unittest import TestCase
 from Crypto.Cipher import AES as pyAES
 
-from AES.aes import *
-from AES.aesutil import *
+from symmetric.aes import *
+from symmetric.aesutil import *
 from util.blockcipher import Mode, Padding
 
 class TestAES128_ECB(TestCase):
@@ -16,13 +16,13 @@ class TestAES128_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         plain = b"Submarine yellow"
         cipher = aes.encrypt(plain)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"\x00"*16
@@ -31,7 +31,7 @@ class TestAES128_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     def test_multiple(self):
@@ -41,7 +41,7 @@ class TestAES128_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"Yellow submarine"
@@ -50,7 +50,7 @@ class TestAES128_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     # def test_padding(self):
@@ -66,13 +66,13 @@ class TestAES192_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         plain = b"Submarine yellow"
         cipher = aes.encrypt(plain)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"\x00"*24
@@ -81,7 +81,7 @@ class TestAES192_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     def test_multiple(self):
@@ -91,7 +91,7 @@ class TestAES192_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"Yellow submarine01234567"
@@ -100,7 +100,7 @@ class TestAES192_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
 # -------------------------------------------------------------------------- #
@@ -113,13 +113,13 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         plain = b"Submarine yellow"
         cipher = aes.encrypt(plain)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"\x00"*32
@@ -128,7 +128,7 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     def test_multiple(self):
@@ -138,7 +138,7 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
         key = b"Yellow submarineYellow submarine"
@@ -147,7 +147,7 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
 # -------------------------------------------------------------------------- #
@@ -160,7 +160,7 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain + bytes(8)))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     def test_ansi(self):
@@ -170,7 +170,7 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain + bytes(7) + b"\x08"))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 
     def test_pkcs(self):
@@ -180,7 +180,7 @@ class TestAES256_ECB(TestCase):
         cipher = aes.encrypt(plain)
         aestrue = pyAES.new(key, pyAES.MODE_ECB)
         expected = binascii.hexlify(aestrue.encrypt(plain + b"\x08"*8))
-        self.assertEqual(cipher.hex(), expected.decode())
+        self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
 # -------------------------------------------------------------------------- #
 
