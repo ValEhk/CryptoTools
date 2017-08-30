@@ -5,6 +5,8 @@ CryptoTools is a small python tool providing a quick and easy way to complete th
 It can also be used to simply encrypt/decrypt messages, although it is likely not as good as the "official" encryption packages.
 
 Currently available are:
+* string rotation/Ceasar cipher;
+* xor on strings;
 * RSA basic encryption/decryption;
 * common RSA attacks such as Wiener, Hastad or common modulus;
 * AES-128, AES-192, AES-224 (ECB only) with multiple padding choice;

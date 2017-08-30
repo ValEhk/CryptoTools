@@ -4,10 +4,10 @@ import sys
 import gmpy2
 from argparse import ArgumentParser, ArgumentError, RawDescriptionHelpFormatter
 
+import legacy.substitute as subst
 from factorizer.factorizer import Factorizer, Algo
 from asymmetric.rsa import *
 from symmetric.aes import *
-from legacy.substitute import rot
 from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
 
@@ -70,6 +70,8 @@ if __name__ == "__main__":
     descr = ("CryptoTools is a small python tool providing a quick and easy ",
         "way to complete the basic cryptography challenges commonly found during CTFs.",
         "\n\nCurrently available are:",
+        "\n    * string rotation/Ceasar cipher;",
+        "\n    * xor on strings;",
         "\n    * RSA basic encryption/decryption;",
         "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
         "\n    * AES-128, AES-192, AES-224 (ECB only) with multiple padding choice;")
@@ -150,23 +152,41 @@ if __name__ == "__main__":
     # Rot parser
     rotparser = subparser.add_parser("rot", help="Ceasar cipher / string rotation")
     rotexcl = rotparser.add_mutually_exclusive_group()
-    rotexcl.add_argument("-s", "--shift", type=parse_int, default=13,
+    rotexcl.add_argument("-k", "--key", type=parse_int, default=13,
             help="shift [int] (default 13)")
     rotexcl.add_argument("--all", action="store_true", help="print all 26 rotations")
-    rotparser.add_argument("plain", help="plaintext [string]")
+    rotparser.add_argument("input", help="text to be rotated [string]")
+
+    # Xor parser
+    xorparser = subparser.add_parser("xor", help="xor string with the given value/range")
+    xorexcl = xorparser.add_mutually_exclusive_group(required=True)
+    xorexcl.add_argument("-k", "--key", type=parse_int, help="xor value [int]")
+    xorexcl.add_argument("--range", nargs=2, type=parse_int, metavar=('MIN', 'MAX'),
+            help="range of xor values [min, max[")
+    xorparser.add_argument("input", help="text to be xored [string]")
 
     # Parse args
     args = parser.parse_args()
     if args.cmd == "rsa":
         print(handle_rsa(args))
+
     elif args.cmd == "aes":
         print(handle_aes(args))
+
     elif args.cmd == "rot":
         if args.all:
             for i in range(26):
-                print(rot(args.plain, i))
+                print(subst.rot(args.input, i))
         else:
-            print(rot(args.plain, args.shift))
+            print(subst.rot(args.input, args.key))
+
+    elif args.cmd == "xor":
+        if args.range:
+            for i in range(args.range[0], args.range[1]):
+                print(subst.xor(args.input.encode(), i))
+        else:
+            print(subst.xor(args.input.encode(), args.key))
+
     else:
         parser.print_help()
 
