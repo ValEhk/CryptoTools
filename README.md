@@ -17,9 +17,11 @@ Usage
     usage: cryptotools.py [-h] [--version] {rsa,aes} ...
 
     positional arguments:
-      {rsa,aes}
-        rsa       RSA cryptosystem
-        aes       AES-[128|192|224] encryption
+      {rsa,aes,rot,xor}
+        rsa              RSA cryptosystem
+        aes              AES-[128|192|224] encryption
+        rot              Ceasar cipher / string rotation
+        xor              xor string with the given value/range
 
     optional arguments:
       -h, --help  show this help message and exit
