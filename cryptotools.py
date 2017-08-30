@@ -4,9 +4,10 @@ import sys
 import gmpy2
 from argparse import ArgumentParser, ArgumentError, RawDescriptionHelpFormatter
 
-from asymmetric.rsa import *
 from factorizer.factorizer import Factorizer, Algo
+from asymmetric.rsa import *
 from symmetric.aes import *
+from legacy.substitute import rot
 from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
 
@@ -146,12 +147,26 @@ if __name__ == "__main__":
             help="encrypt m with key k")
     encsub.add_argument("-m", required=True, help="plaintext [string]")
 
+    # Rot parser
+    rotparser = subparser.add_parser("rot", help="Ceasar cipher / string rotation")
+    rotexcl = rotparser.add_mutually_exclusive_group()
+    rotexcl.add_argument("-s", "--shift", type=parse_int, default=13,
+            help="shift [int] (default 13)")
+    rotexcl.add_argument("--all", action="store_true", help="print all 26 rotations")
+    rotparser.add_argument("plain", help="plaintext [string]")
+
     # Parse args
     args = parser.parse_args()
     if args.cmd == "rsa":
         print(handle_rsa(args))
     elif args.cmd == "aes":
         print(handle_aes(args))
+    elif args.cmd == "rot":
+        if args.all:
+            for i in range(26):
+                print(rot(args.plain, i))
+        else:
+            print(rot(args.plain, args.shift))
     else:
         parser.print_help()
 
