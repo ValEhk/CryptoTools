@@ -7,6 +7,7 @@ It can also be used to simply encrypt/decrypt messages, although it is likely no
 Currently available are:
 * string rotation/Ceasar cipher;
 * xor on strings;
+* Vigenere cipher;
 * RSA basic encryption/decryption;
 * common RSA attacks such as Wiener, Hastad or common modulus;
 * AES-128, AES-192, AES-224 (ECB only) with multiple padding choice;
@@ -14,18 +15,19 @@ Currently available are:
 
 Usage
 -----
-    usage: cryptotools.py [-h] [--version] {rsa,aes} ...
+    usage: cryptotools.py [-h] [--version] {rsa,aes,rot,xor,vigenere} ...
 
     positional arguments:
-      {rsa,aes,rot,xor}
-        rsa              RSA cryptosystem
-        aes              AES-[128|192|224] encryption
-        rot              Ceasar cipher / string rotation
-        xor              xor string with the given value/range
+    {rsa,aes,rot,xor,vigenere}
+        rsa                 RSA cryptosystem
+        aes                 AES-[128|192|224] encryption
+        rot                 Ceasar cipher / string rotation
+        xor                 xor string with the given value/range
+        vigenere            Vigenere cipher
 
     optional arguments:
-      -h, --help  show this help message and exit
-      --version   show program's version number and exit
+    -h, --help            show this help message and exit
+    --version             show program's version number and exit
 
 Additional help can be found by using the option `-help` or `-h` with a specific subcommand.
 
