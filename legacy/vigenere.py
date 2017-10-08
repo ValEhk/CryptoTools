@@ -2,8 +2,6 @@
 
 import string
 
-import util.frequency as freq
-
 _alphabet_lower = string.ascii_lowercase
 _alphabet_upper = string.ascii_uppercase
 _alphabet = string.ascii_letters
