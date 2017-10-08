@@ -3,6 +3,7 @@
 from unittest import TestCase
 
 from legacy.substitute import rot, xor
+from legacy.vigenere import *
 
 class TestCeasar(TestCase):
     def test_letters(self):
@@ -41,7 +42,18 @@ class TestXor(TestCase):
 
 # -------------------------------------------------------------------------- #
 
-# class TestVigenere(TestCase):
+class TestVigenere(TestCase):
+    def test_basic(self):
+        plain = "Hello World!"
+        self.assertEqual(plain, encrypt(plain, "A"))
+        self.assertEqual(plain, encrypt(plain, "aaaaaa"))
+        plain = "deadbeef"
+        self.assertEqual(rot(plain, 3), encrypt(plain, "dd"))
+
+    def test_mixed(self):
+        plain = "Hello World!"
+        self.assertEqual(decrypt(encrypt(plain, "AZERTY"), "azerty"), plain)
+        self.assertEqual(encrypt(encrypt(plain, "bZbzbZ"), "ZbZbzb"), plain)
 
 # -------------------------------------------------------------------------- #
 

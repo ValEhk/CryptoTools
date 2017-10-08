@@ -5,6 +5,7 @@ import gmpy2
 from argparse import ArgumentParser, ArgumentError, RawDescriptionHelpFormatter
 
 import legacy.substitute as subst
+import legacy.vigenere as vig
 from factorizer.factorizer import Factorizer, Algo
 from asymmetric.rsa import *
 from symmetric.aes import *
@@ -58,13 +59,31 @@ def handle_aes(args):
     elif args.action == "decrypt":
         return aes.decrypt(args.c)
 
+def handle_rot(args):
+    if args.all:
+        for i in range(26):
+            print(subst.rot(args.input, i))
+    else:
+        print(subst.rot(args.input, args.key))
+
+def handle_xor(args):
+    if args.range:
+        for i in range(args.range[0], args.range[1]):
+            print(subst.xor(args.input.encode(), i))
+    else:
+        print(subst.xor(args.input.encode(), args.key))
+
+def handle_vigenere(args):
+    if args.action == "encrypt":
+        return vig.encrypt(args.input , args.key)
+    elif args.action == "decrypt":
+        return vig.decrypt(args.input, args.key)
+
 # -------------------------------------------------------------------------- #
 
 def parse_int(value):
     return int(value, 0)
 
-# TODO ceasar cipher
-# TODO vigenere
 # TODO factorize only
 if __name__ == "__main__":
     descr = ("CryptoTools is a small python tool providing a quick and easy ",
@@ -72,6 +91,7 @@ if __name__ == "__main__":
         "\n\nCurrently available are:",
         "\n    * string rotation/Ceasar cipher;",
         "\n    * xor on strings;",
+        "\n    * Vigenere cipher;",
         "\n    * RSA basic encryption/decryption;",
         "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
         "\n    * AES-128, AES-192, AES-224 (ECB only) with multiple padding choice;")
@@ -94,7 +114,6 @@ if __name__ == "__main__":
     c_argp.add_argument("-c", type=parse_int, required=True, help="ciphertext [int]")
     m_argp = ArgumentParser(add_help=False)
     m_argp.add_argument("-m", required=True, help="plaintext [string]")
-
     # RSA parser
     rsasubs = rsaparser.add_subparsers(dest="action")
     rsasubs.add_parser("decrypt", parents=[n_argp, d_argp, c_argp],
@@ -138,7 +157,6 @@ if __name__ == "__main__":
     pad_argp = ArgumentParser(add_help=False)
     pad_argp.add_argument("--padding", default="PKCS7", choices=[e.name for e in Padding],
             help="Padding method (default PKCS7)")
-
     # AES parser
     aesparser = subparser.add_parser("aes", help="AES-[128|192|224] encryption")
     aessubs = aesparser.add_subparsers(dest="action")
@@ -165,29 +183,29 @@ if __name__ == "__main__":
             help="range of xor values [min, max[")
     xorparser.add_argument("input", help="text to be xored [string]")
 
+    # Vigenere parser
+    vin_argp = ArgumentParser(add_help=False)
+    vin_argp.add_argument("input", help="input text [string]")
+    vkey_argp = ArgumentParser(add_help=False)
+    vkey_argp.add_argument("-k", "--key", required=True, help="key [string]")
+    vigparser = subparser.add_parser("vigenere", help="Vigenere cipher")
+    vigsubs = vigparser.add_subparsers(dest="action")
+    vdecsub = vigsubs.add_parser("decrypt", parents=[vin_argp, vkey_argp],
+            help="Decrypt 'input' with key k")
+    vencsub = vigsubs.add_parser("encrypt", parents=[vin_argp, vkey_argp],
+            help="Encrypt 'input' with key k")
+
     # Parse args
     args = parser.parse_args()
     if args.cmd == "rsa":
         print(handle_rsa(args))
-
     elif args.cmd == "aes":
         print(handle_aes(args))
-
     elif args.cmd == "rot":
-        if args.all:
-            for i in range(26):
-                print(subst.rot(args.input, i))
-        else:
-            print(subst.rot(args.input, args.key))
-
+        handle_rot(args)
     elif args.cmd == "xor":
-        if args.range:
-            for i in range(args.range[0], args.range[1]):
-                print(subst.xor(args.input.encode(), i))
-        else:
-            print(subst.xor(args.input.encode(), args.key))
-
+        handle_xor(args)
+    elif args.cmd == "vigenere":
+        print(handle_vigenere(args))
     else:
         parser.print_help()
-
-
