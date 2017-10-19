@@ -8,17 +8,19 @@ Currently available are:
 * string rotation/Ceasar cipher;
 * xor on strings;
 * Vigenere cipher;
+* prime factorization;
 * RSA basic encryption/decryption;
 * common RSA attacks such as Wiener, Hastad or common modulus;
-* AES-128, AES-192, AES-224 (ECB only) with multiple padding choice;
+* AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;
 
 
 Usage
 -----
-    usage: cryptotools.py [-h] [--version] {rsa,aes,rot,xor,vigenere} ...
+    usage: cryptotools.py [-h] [--version] {factorize, rsa,aes,rot,xor,vigenere} ...
 
     positional arguments:
-    {rsa,aes,rot,xor,vigenere}
+    {factorize, rsa,aes,rot,xor,vigenere}
+        factorize           prime factorization
         rsa                 RSA cryptosystem
         aes                 AES-[128|192|224] encryption
         rot                 Ceasar cipher / string rotation

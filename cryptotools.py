@@ -4,13 +4,18 @@ import sys
 import gmpy2
 from argparse import ArgumentParser, ArgumentError, RawDescriptionHelpFormatter
 
-import legacy.substitute as subst
-import legacy.vigenere as vig
+import substitution.vigenere as vig
+from substitution.ceasar import rot
+from substitution.xor import xorvalue, xorstrings
 from factorizer.factorizer import Factorizer, Algo
 from asymmetric.rsa import *
 from symmetric.aes import *
 from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
+
+def handle_factorize(args):
+    f = Factorizer(Algo[args.algo], args.limit)
+    return f.factorize(args.n)
 
 def handle_rsa(args):
     if args.action == "common":
@@ -53,7 +58,9 @@ def handle_rsa(args):
         return pub.encrypt(args.m.encode())
 
 def handle_aes(args):
-    aes = AES(args.key.encode(), Mode[args.mode], Padding[args.padding])
+    if args.iv:
+        args.iv =  args.iv.encode()
+    aes = AES(args.key.encode(), Mode[args.mode], Padding[args.padding], args.iv)
     if args.action == "encrypt":
         return aes.encrypt(args.m.encode())
     elif args.action == "decrypt":
@@ -62,16 +69,16 @@ def handle_aes(args):
 def handle_rot(args):
     if args.all:
         for i in range(26):
-            print(subst.rot(args.input, i))
+            print(rot(args.input, i))
     else:
-        print(subst.rot(args.input, args.key))
+        print(rot(args.input, args.key))
 
 def handle_xor(args):
     if args.range:
         for i in range(args.range[0], args.range[1]):
-            print(subst.xor(args.input.encode(), i))
+            print(xorvalue(args.input.encode(), i))
     else:
-        print(subst.xor(args.input.encode(), args.key))
+        print(xorvalue(args.input.encode(), args.key))
 
 def handle_vigenere(args):
     if args.action == "encrypt":
@@ -92,12 +99,22 @@ if __name__ == "__main__":
         "\n    * string rotation/Ceasar cipher;",
         "\n    * xor on strings;",
         "\n    * Vigenere cipher;",
+        "\n    * prime factorization;",
         "\n    * RSA basic encryption/decryption;",
         "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
-        "\n    * AES-128, AES-192, AES-224 (ECB only) with multiple padding choice;")
+        "\n    * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;")
     parser = ArgumentParser(description=''.join(descr), formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('--version', action='version', version="%(prog)s 1.0")
     subparser = parser.add_subparsers(dest="cmd")
+
+    # Factorize parser
+    factoparser = subparser.add_parser("factorize", help="prime factorization")
+    factoparser.add_argument("--algo", default="FACTORDB",
+            choices=[e.name for e in Algo],
+            help="algorithm used to factorize n (default FACTORDB)")
+    factoparser.add_argument("--limit", default=10000, type=parse_int,
+            help="maximum number of tries (SMALL_PRIMES and FERMAT only) (default 10000)")
+    factoparser.add_argument("n", type=parse_int, help="number to factorize [int]")
 
     # RSA args
     rsaparser = subparser.add_parser("rsa", help="RSA cryptosystem")
@@ -131,7 +148,7 @@ if __name__ == "__main__":
     factsub.add_argument("--algo", default="FACTORDB",
             choices=[e.name for e in Algo],
             help="algorithm used to factorize n (default FACTORDB)")
-    factsub.add_argument("--limit", default=10000,
+    factsub.add_argument("--limit", default=10000, type=parse_int,
             help="maximum number of tries (SMALL_PRIMES and FERMAT only) (default 10000)")
     rsasubs.add_parser("wiener", parents=[n_argp, e_argp, c_argp],
             help="Wiener's attack (d small)")
@@ -157,13 +174,15 @@ if __name__ == "__main__":
     pad_argp = ArgumentParser(add_help=False)
     pad_argp.add_argument("--padding", default="PKCS7", choices=[e.name for e in Padding],
             help="Padding method (default PKCS7)")
+    iv_argp = ArgumentParser(add_help=False)
+    iv_argp.add_argument("--iv", default=None, help="CBC initialization vector [string] (16 bytes)")
     # AES parser
     aesparser = subparser.add_parser("aes", help="AES-[128|192|224] encryption")
     aessubs = aesparser.add_subparsers(dest="action")
-    decsub = aessubs.add_parser("decrypt", parents=[key_argp, mode_argp, pad_argp],
+    decsub = aessubs.add_parser("decrypt", parents=[key_argp, mode_argp, pad_argp, iv_argp],
             help="decrypt c with key k")
     decsub.add_argument("-c", required=True, help="ciphertext [hex string]")
-    encsub = aessubs.add_parser("encrypt", parents=[key_argp, mode_argp, pad_argp],
+    encsub = aessubs.add_parser("encrypt", parents=[key_argp, mode_argp, pad_argp, iv_argp],
             help="encrypt m with key k")
     encsub.add_argument("-m", required=True, help="plaintext [string]")
 
@@ -197,7 +216,9 @@ if __name__ == "__main__":
 
     # Parse args
     args = parser.parse_args()
-    if args.cmd == "rsa":
+    if args.cmd == "factorize":
+        print(handle_factorize(args))
+    elif args.cmd == "rsa":
         print(handle_rsa(args))
     elif args.cmd == "aes":
         print(handle_aes(args))

@@ -12,11 +12,3 @@ def rot(input, shift=13):
             _alphabet_upper[shift:] + _alphabet_upper[:shift]
     table = str.maketrans(_alphabet, shifted)
     return input.translate(table)
-
-def xor(input, value):
-    """Xor each element of 'input' [bytes] with 'value' [int]."""
-    res = []
-    for c in input:
-        res.append(c^value)
-    return bytes(res)
-

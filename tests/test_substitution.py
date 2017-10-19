@@ -2,8 +2,9 @@
 
 from unittest import TestCase
 
-from legacy.substitute import rot, xor
-from legacy.vigenere import *
+from substitution.ceasar import rot
+from substitution.xor import xorvalue
+from substitution.vigenere import *
 
 class TestCeasar(TestCase):
     def test_letters(self):
@@ -31,13 +32,13 @@ class TestCeasar(TestCase):
 class TestXor(TestCase):
     def test_xor(self):
         plain = b"deadbeef"
-        self.assertEqual(plain, xor(plain, 0))
-        self.assertEqual(plain, xor(xor(plain, 25), 25))
-        self.assertEqual(plain, xor(xor(plain, 99), 99))
+        self.assertEqual(plain, xorvalue(plain, 0))
+        self.assertEqual(plain, xorvalue(xorvalue(plain, 25), 25))
+        self.assertEqual(plain, xorvalue(xorvalue(plain, 99), 99))
         plain = b"Hello World!"
-        self.assertEqual(plain, xor(plain, 0))
-        self.assertEqual(plain, xor(xor(plain, 16), 16))
-        self.assertEqual(plain, xor(xor(plain, 200), 200))
+        self.assertEqual(plain, xorvalue(plain, 0))
+        self.assertEqual(plain, xorvalue(xorvalue(plain, 16), 16))
+        self.assertEqual(plain, xorvalue(xorvalue(plain, 200), 200))
 
 
 # -------------------------------------------------------------------------- #

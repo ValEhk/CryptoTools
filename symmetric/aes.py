@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from symmetric.aesutil import *
+from substitution.xor import xorstrings
 from util.blockcipher import Mode, Padding
 from util.convert import *
 from util.error import AESError, PaddingError
@@ -24,6 +25,8 @@ class AES:
             raise AESError("Invalid key length (must be 16, 24 or 32 bytes)")
         self.mode = mode
         self.padding = padding
+        if self.mode == Mode.CBC and (not iv or len(iv) != 16):
+            raise AESError("IV must be 16 bytes long")
         self.iv = iv
 
     def __repr__(self):
@@ -37,9 +40,15 @@ class AES:
         """Encrypt 'plain' [bytes] and return the corresponding ciphertext [hex string]."""
         parts = []
         plain = self._pad(plain)
+        c_i = self.iv
         for offset in range(0, len(plain), 16):
-            parts.append(self._encrypt_core(plain[offset:offset+16], self.key))
-        return "".join(parts)
+            if self.mode == Mode.ECB:
+                parts.append(self._encrypt_core(plain[offset:offset+16], self.key))
+            elif self.mode == Mode.CBC:
+                cbcin = xorstrings(plain[offset:offset+16], c_i)
+                parts.append(self._encrypt_core(cbcin, self.key))
+                c_i = parts[-1]
+        return b"".join(parts).hex()
 
     def _encrypt_core(self, plain, key):
         """AES encryption loop for each block."""
@@ -54,15 +63,21 @@ class AES:
         matrix.sub_bytes()
         matrix.shift_rows()
         matrix.add_roundkey(expkey, self._rounds)
-        return matrix_to_str(matrix.state).hex()
+        return matrix_to_str(matrix.state)
 
 
     def decrypt(self, cipher):
         """Decrypt 'cipher' [hex string] and return the corresponding plaintext [bytes]."""
         parts = []
         cipher = bytes.fromhex(cipher)
+        c_i = self.iv
         for offset in range(0, len(cipher), 16):
-            parts.append(self._decrypt_core(cipher[offset:offset+16], self.key))
+            if self.mode == Mode.ECB:
+                parts.append(self._decrypt_core(cipher[offset:offset+16], self.key))
+            elif self.mode == Mode.CBC:
+                cbcout = self._decrypt_core(cipher[offset:offset+16], self.key)
+                parts.append(xorstrings(cbcout, c_i))
+                c_i = cipher[offset:offset+16]
         return self._unpad(b"".join(parts))
 
     def _decrypt_core(self, cipher, key):
