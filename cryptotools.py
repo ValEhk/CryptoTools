@@ -10,6 +10,7 @@ from substitution.xor import xorvalue, xorstrings
 from factorizer.factorizer import Factorizer, Algo
 from asymmetric.rsa import *
 from symmetric.aes import *
+from symmetric.padoracle import *
 from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
 
@@ -58,6 +59,13 @@ def handle_rsa(args):
         return pub.encrypt(args.m.encode())
 
 def handle_aes(args):
+    if args.action == "oracle":
+        host = {}
+        host["hostname"] = args.host
+        host["port"] = args.port
+        host["error"] = args.error.encode()
+        # host_data["success"] = args.success
+        return padding_oracle(args.c.encode(), host)
     if args.iv:
         args.iv =  args.iv.encode()
     aes = AES(args.key.encode(), Mode[args.mode], Padding[args.padding], args.iv)
@@ -102,7 +110,8 @@ if __name__ == "__main__":
         "\n    * prime factorization;",
         "\n    * RSA basic encryption/decryption;",
         "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
-        "\n    * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;")
+        "\n    * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;",
+        "\n    * AES CBC padding oracle attack.")
     parser = ArgumentParser(description=''.join(descr), formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('--version', action='version', version="%(prog)s 1.0")
     subparser = parser.add_subparsers(dest="cmd")
@@ -185,6 +194,13 @@ if __name__ == "__main__":
     encsub = aessubs.add_parser("encrypt", parents=[key_argp, mode_argp, pad_argp, iv_argp],
             help="encrypt m with key k")
     encsub.add_argument("-m", required=True, help="plaintext [string]")
+    oraclesub = aessubs.add_parser("oracle", help="Decrypt c using CBC padding oracle attack")
+    oraclesub.add_argument("-c", required=True, help="ciphertext [hex string]")
+    oraclesub.add_argument("--host", required=True, help="Hostname/IP adress [string]")
+    oraclesub.add_argument("-p", "--port", required=True, type=parse_int, help="port [int]")
+    oraclesub.add_argument("--error", default="Error",
+            help="text received on error [string] (default 'Error')")
+    # oraclesub.add_argument("--success", default=None, help="text received on success [string]")
 
     # Rot parser
     rotparser = subparser.add_parser("rot", help="Ceasar cipher / string rotation")
