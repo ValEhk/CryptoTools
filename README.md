@@ -12,6 +12,7 @@ Currently available are:
 * RSA basic encryption/decryption;
 * common RSA attacks such as Wiener, Hastad or common modulus;
 * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;
+* CBC padding oracle attack.
 
 
 Usage
@@ -19,7 +20,7 @@ Usage
     usage: cryptotools.py [-h] [--version] {factorize, rsa,aes,rot,xor,vigenere} ...
 
     positional arguments:
-    {factorize, rsa,aes,rot,xor,vigenere}
+    {factorize,rsa,aes,rot,xor,vigenere}
         factorize           prime factorization
         rsa                 RSA cryptosystem
         aes                 AES-[128|192|224] encryption

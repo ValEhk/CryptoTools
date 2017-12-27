@@ -111,7 +111,7 @@ if __name__ == "__main__":
         "\n    * RSA basic encryption/decryption;",
         "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
         "\n    * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;",
-        "\n    * AES CBC padding oracle attack.")
+        "\n    * CBC padding oracle attack.")
     parser = ArgumentParser(description=''.join(descr), formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('--version', action='version', version="%(prog)s 1.0")
     subparser = parser.add_subparsers(dest="cmd")
@@ -194,7 +194,7 @@ if __name__ == "__main__":
     encsub = aessubs.add_parser("encrypt", parents=[key_argp, mode_argp, pad_argp, iv_argp],
             help="encrypt m with key k")
     encsub.add_argument("-m", required=True, help="plaintext [string]")
-    oraclesub = aessubs.add_parser("oracle", help="Decrypt c using CBC padding oracle attack")
+    oraclesub = aessubs.add_parser("oracle", help="Decrypt 'c' using CBC padding oracle attack")
     oraclesub.add_argument("-c", required=True, help="ciphertext [hex string]")
     oraclesub.add_argument("--host", required=True, help="Hostname/IP adress [string]")
     oraclesub.add_argument("-p", "--port", required=True, type=parse_int, help="port [int]")

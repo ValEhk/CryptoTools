@@ -14,9 +14,22 @@ def hexarray_to_str(hexa):
 
 # -------------------------------------------------------------------------- #
 
+def hstr_to_ascii(hstr):
+    """Convert hex byte string into ascii string."""
+    return binascii.unhexlify(hstr)
+
+# -------------------------------------------------------------------------- #
+
+def ascii_to_hstr(str):
+    """Convert ascii string into hex byte string."""
+    return binascii.hexlify(str)
+
+# -------------------------------------------------------------------------- #
+
 def str_to_hex(str):
     """Convert byte string into hex value."""
     return int(binascii.hexlify(str), 16)
+
 
 def str_to_hexarray(str):
     """Convert byte string into hex array."""
