@@ -10,12 +10,12 @@ from parsimonious.nodes import NodeVisitor
 from util.error import FactorizationError, FactordbError
 
 # Status returned by factordb.com
-fdb_status = { "C": "Composite, no factors knwon",
-        "CF": "Composite, factors known",
-        "FF": "Composite, fully factored",
-        "P": "Definitely prime",
-        "Prp": "Probably prime",
-        "U": "Unknown"}
+fdb_status = {"C": "Composite, no factors knwon",
+              "CF": "Composite, factors known",
+              "FF": "Composite, fully factored",
+              "P": "Definitely prime",
+              "Prp": "Probably prime",
+              "U": "Unknown"}
 
 _fdb_url = "http://factordb.com/"
 
@@ -40,28 +40,35 @@ class FDBParser(NodeVisitor):
         res = self.visit(ast)
         self.factors = [int(v) for v in res]
     def visit_power(self, n, vc):
+        """Visit 'power' node."""
         nvc = []
-        for i in range(int(vc[2][0])):
+        for _ in range(int(vc[2][0])):
             nvc.extend(vc[0])
         return nvc
     def visit_mult(self, n, vc):
+        """Visit 'mult' node."""
         vc[0].extend(vc[2])
         return vc[0]
     def visit_int(self, n, vc):
+        """Visit 'int' node."""
         return [n.text]
     def visit_factor(self, n, vc):
+        """Visit 'factor' node."""
         return vc[0]
-    def visit_digit(self, n, vc):
-        return [n.text]
     def visit_parent(self, n, vc):
+        """Visit 'parent' node."""
         return vc[1]
     def visit_mval(self, n, vc):
+        """Visit 'mval' node."""
         return vc[0]
     def visit_pval(self, n, vc):
+        """Visit 'pval' node."""
         return vc[0]
     def visit_expr(self, n, vc):
+        """Visit 'expr' node."""
         return vc[0]
-    def generic_visit(self, n, vc):
+    def generic_visit(self, node, visited_children):
+        """Generic empty visitor."""
         pass
 
 def get_factors(n):
@@ -69,7 +76,7 @@ def get_factors(n):
     try:
         url = _fdb_url + "index.php?query=" + str(n)
         res = urlreq.urlopen(url)
-    except IOError as err:
+    except IOError:
         # Handle Internet connectivity issues
         raise FactordbError("Unable to access %s" % url)
     if res.getcode() != 200:

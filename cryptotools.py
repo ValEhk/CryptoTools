@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
-import sys
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
 import gmpy2
-from argparse import ArgumentParser, ArgumentError, RawDescriptionHelpFormatter
 
 import substitution.vigenere as vig
 from substitution.ceasar import rot
-from substitution.xor import xorvalue, xorstrings
+from substitution.xor import xorvalue
 from factorizer.factorizer import Factorizer, Algo
-from asymmetric.rsa import *
-from symmetric.aes import *
-from symmetric.padoracle import *
+from asymmetric.rsa import RSA, PrivKey, PubKey, wiener, hastad, common_modulus
+from symmetric.aes import AES
+from symmetric.padoracle import padding_oracle
 from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
 
@@ -24,7 +23,7 @@ def handle_rsa(args):
         pk2 = PrivKey(args.n, args.e[1])
         return common_modulus(pk1, pk2, args.c[0], args.c[1])
     elif args.action == "eroot":
-        plainmpz = gmpy2.iroot(gmpy2.mpz(args.c),args.e)
+        plainmpz = gmpy2.iroot(gmpy2.mpz(args.c), args.e)
         return hex_to_str(plainmpz[0])
     elif args.action == "hastad":
         pks, cs = [], []
@@ -34,7 +33,7 @@ def handle_rsa(args):
         return hastad(pks, cs)
     elif args.action == "wiener":
         pubk = PubKey(args.n, args.e)
-        p, q, d = wiener(pubk)
+        _, _, d = wiener(pubk)
         priv = PrivKey(args.n, d)
         return priv.decrypt(args.c)
     elif args.action == "crack":
@@ -64,10 +63,9 @@ def handle_aes(args):
         host["hostname"] = args.host
         host["port"] = args.port
         host["error"] = args.error.encode()
-        # host_data["success"] = args.success
         return padding_oracle(args.c.encode(), host)
     if args.iv:
-        args.iv =  args.iv.encode()
+        args.iv = args.iv.encode()
     aes = AES(args.key.encode(), Mode[args.mode], Padding[args.padding], args.iv)
     if args.action == "encrypt":
         return aes.encrypt(args.m.encode())
@@ -90,7 +88,7 @@ def handle_xor(args):
 
 def handle_vigenere(args):
     if args.action == "encrypt":
-        return vig.encrypt(args.input , args.key)
+        return vig.encrypt(args.input, args.key)
     elif args.action == "decrypt":
         return vig.decrypt(args.input, args.key)
 
@@ -99,19 +97,18 @@ def handle_vigenere(args):
 def parse_int(value):
     return int(value, 0)
 
-# TODO factorize only
 if __name__ == "__main__":
     descr = ("CryptoTools is a small python tool providing a quick and easy ",
-        "way to complete the basic cryptography challenges commonly found during CTFs.",
-        "\n\nCurrently available are:",
-        "\n    * string rotation/Ceasar cipher;",
-        "\n    * xor on strings;",
-        "\n    * Vigenere cipher;",
-        "\n    * prime factorization;",
-        "\n    * RSA basic encryption/decryption;",
-        "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
-        "\n    * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;",
-        "\n    * CBC padding oracle attack.")
+             "way to complete the basic cryptography challenges commonly found during CTFs.",
+             "\n\nCurrently available are:",
+             "\n    * string rotation/Ceasar cipher;",
+             "\n    * xor on strings;",
+             "\n    * Vigenere cipher;",
+             "\n    * prime factorization;",
+             "\n    * RSA basic encryption/decryption;",
+             "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
+             "\n    * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;",
+             "\n    * CBC padding oracle attack.")
     parser = ArgumentParser(description=''.join(descr), formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('--version', action='version', version="%(prog)s 1.0")
     subparser = parser.add_subparsers(dest="cmd")
@@ -119,10 +116,10 @@ if __name__ == "__main__":
     # Factorize parser
     factoparser = subparser.add_parser("factorize", help="prime factorization")
     factoparser.add_argument("--algo", default="FACTORDB",
-            choices=[e.name for e in Algo],
-            help="algorithm used to factorize n (default FACTORDB)")
+                             choices=[e.name for e in Algo],
+                             help="algorithm used to factorize n (default FACTORDB)")
     factoparser.add_argument("--limit", default=10000, type=parse_int,
-            help="maximum number of tries (SMALL_PRIMES and FERMAT only) (default 10000)")
+                             help="maximum number of tries (SMALL_PRIMES and FERMAT only) (default 10000)")
     factoparser.add_argument("n", type=parse_int, help="number to factorize [int]")
 
     # RSA args
@@ -143,70 +140,69 @@ if __name__ == "__main__":
     # RSA parser
     rsasubs = rsaparser.add_subparsers(dest="action")
     rsasubs.add_parser("decrypt", parents=[n_argp, d_argp, c_argp],
-            help="decrypt c with private key (n, d)")
+                       help="decrypt c with private key (n, d)")
     rsasubs.add_parser("decrypt-pq", parents=[pq_argp, e_argp, c_argp],
-            help="decrypt c with primes p and q")
+                       help="decrypt c with primes p and q")
     rsasubs.add_parser("encrypt", parents=[n_argp, e_argp, m_argp],
-            help="encrypt m with public key (n, e)")
+                       help="encrypt m with public key (n, e)")
     rsasubs.add_parser("encrypt-pq", parents=[pq_argp, e_argp, m_argp],
-            help="encrypt m with primes p and q")
+                       help="encrypt m with primes p and q")
     rsasubs.add_parser("eroot", parents=[e_argp, c_argp],
-            help="compute the eth-root of c (big n, small e)")
+                       help="compute the eth-root of c (big n, small e)")
     factsub = rsasubs.add_parser("crack", parents=[n_argp, e_argp, c_argp],
-            help="try to factorize n to decrypt c")
+                                 help="try to factorize n to decrypt c")
     factsub.add_argument("--algo", default="FACTORDB",
-            choices=[e.name for e in Algo],
-            help="algorithm used to factorize n (default FACTORDB)")
+                         choices=[e.name for e in Algo],
+                         help="algorithm used to factorize n (default FACTORDB)")
     factsub.add_argument("--limit", default=10000, type=parse_int,
-            help="maximum number of tries (SMALL_PRIMES and FERMAT only) (default 10000)")
+                         help="maximum number of tries (SMALL_PRIMES and FERMAT only) (default 10000)")
     rsasubs.add_parser("wiener", parents=[n_argp, e_argp, c_argp],
-            help="Wiener's attack (d small)")
+                       help="Wiener's attack (d small)")
     commonsub = rsasubs.add_parser("common", parents=[n_argp],
-            help="common modulus attack (same n, same m)")
+                                   help="common modulus attack (same n, same m)")
     commonsub.add_argument("-e", type=parse_int, nargs=2, required=True,
-            help="two public exponents [int]")
+                           help="two public exponents [int]")
     commonsub.add_argument("-c", type=parse_int, nargs=2, required=True,
-            help="two ciphertexts [int]")
+                           help="two ciphertexts [int]")
     hastadsub = rsasubs.add_parser("hastad", parents=[e_argp],
-            help="Hastad's attack (same m sent e times)")
+                                   help="Hastad's attack (same m sent e times)")
     hastadsub.add_argument("-n", type=parse_int, nargs="+", required=True,
-            help="list of moduli [List<int>]")
+                           help="list of moduli [List<int>]")
     hastadsub.add_argument("-c", type=parse_int, nargs="+", required=True,
-            help="list of ciphertexts [List<int>]")
+                           help="list of ciphertexts [List<int>]")
 
     # AES args
     key_argp = ArgumentParser(add_help=False)
     key_argp.add_argument("-k", "--key", required=True, help="secret key [string] (16, 24 or 32 bytes)")
     mode_argp = ArgumentParser(add_help=False)
     mode_argp.add_argument("--mode", default="ECB", choices=[e.name for e in Mode],
-            help="blockcipher encryption mode (default ECB)")
+                           help="blockcipher encryption mode (default ECB)")
     pad_argp = ArgumentParser(add_help=False)
     pad_argp.add_argument("--padding", default="PKCS7", choices=[e.name for e in Padding],
-            help="Padding method (default PKCS7)")
+                          help="Padding method (default PKCS7)")
     iv_argp = ArgumentParser(add_help=False)
     iv_argp.add_argument("--iv", default=None, help="CBC initialization vector [string] (16 bytes)")
     # AES parser
     aesparser = subparser.add_parser("aes", help="AES-[128|192|224] encryption")
     aessubs = aesparser.add_subparsers(dest="action")
     decsub = aessubs.add_parser("decrypt", parents=[key_argp, mode_argp, pad_argp, iv_argp],
-            help="decrypt c with key k")
+                                help="decrypt c with key k")
     decsub.add_argument("-c", required=True, help="ciphertext [hex string]")
     encsub = aessubs.add_parser("encrypt", parents=[key_argp, mode_argp, pad_argp, iv_argp],
-            help="encrypt m with key k")
+                                help="encrypt m with key k")
     encsub.add_argument("-m", required=True, help="plaintext [string]")
     oraclesub = aessubs.add_parser("oracle", help="Decrypt 'c' using CBC padding oracle attack")
     oraclesub.add_argument("-c", required=True, help="ciphertext [hex string]")
     oraclesub.add_argument("--host", required=True, help="Hostname/IP adress [string]")
     oraclesub.add_argument("-p", "--port", required=True, type=parse_int, help="port [int]")
     oraclesub.add_argument("--error", default="Error",
-            help="text received on error [string] (default 'Error')")
-    # oraclesub.add_argument("--success", default=None, help="text received on success [string]")
+                           help="text received on error [string] (default 'Error')")
 
     # Rot parser
     rotparser = subparser.add_parser("rot", help="Ceasar cipher / string rotation")
     rotexcl = rotparser.add_mutually_exclusive_group()
     rotexcl.add_argument("-k", "--key", type=parse_int, default=13,
-            help="shift [int] (default 13)")
+                         help="shift [int] (default 13)")
     rotexcl.add_argument("--all", action="store_true", help="print all 26 rotations")
     rotparser.add_argument("input", help="text to be rotated [string]")
 
@@ -215,7 +211,7 @@ if __name__ == "__main__":
     xorexcl = xorparser.add_mutually_exclusive_group(required=True)
     xorexcl.add_argument("-k", "--key", type=parse_int, help="xor value [int]")
     xorexcl.add_argument("--range", nargs=2, type=parse_int, metavar=('MIN', 'MAX'),
-            help="range of xor values [min, max[")
+                         help="range of xor values [min, max[")
     xorparser.add_argument("input", help="text to be xored [string]")
 
     # Vigenere parser
@@ -226,23 +222,23 @@ if __name__ == "__main__":
     vigparser = subparser.add_parser("vigenere", help="Vigenere cipher")
     vigsubs = vigparser.add_subparsers(dest="action")
     vdecsub = vigsubs.add_parser("decrypt", parents=[vin_argp, vkey_argp],
-            help="Decrypt 'input' with key k")
+                                 help="Decrypt 'input' with key k")
     vencsub = vigsubs.add_parser("encrypt", parents=[vin_argp, vkey_argp],
-            help="Encrypt 'input' with key k")
+                                 help="Encrypt 'input' with key k")
 
     # Parse args
-    args = parser.parse_args()
-    if args.cmd == "factorize":
-        print(handle_factorize(args))
-    elif args.cmd == "rsa":
-        print(handle_rsa(args))
-    elif args.cmd == "aes":
-        print(handle_aes(args))
-    elif args.cmd == "rot":
-        handle_rot(args)
-    elif args.cmd == "xor":
-        handle_xor(args)
-    elif args.cmd == "vigenere":
-        print(handle_vigenere(args))
+    args_parser = parser.parse_args()
+    if args_parser.cmd == "factorize":
+        print(handle_factorize(args_parser))
+    elif args_parser.cmd == "rsa":
+        print(handle_rsa(args_parser))
+    elif args_parser.cmd == "aes":
+        print(handle_aes(args_parser))
+    elif args_parser.cmd == "rot":
+        handle_rot(args_parser)
+    elif args_parser.cmd == "xor":
+        handle_xor(args_parser)
+    elif args_parser.cmd == "vigenere":
+        print(handle_vigenere(args_parser))
     else:
         parser.print_help()

@@ -2,8 +2,9 @@
 
 from unittest import TestCase
 
-from asymmetric.rsa import *
+from asymmetric.rsa import RSA, PubKey, PrivKey, hastad, wiener
 from util.convert import hex_to_str
+from util.error import RSAError
 
 class TestGen(TestCase):
     def test_simple(self):

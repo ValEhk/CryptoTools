@@ -29,7 +29,7 @@ def _get_shifted_char(txtchar, keychar, right=True):
 def encrypt(plain, key):
     """Encrypt 'plain' [string] with 'key' [string]."""
     cipher = []
-    for i in range(len(plain)):
+    for i, _ in enumerate(plain):
         enc_char = _get_shifted_char(plain[i], key[i % len(key)])
         cipher.append(enc_char)
     return ''.join(cipher)
@@ -37,7 +37,7 @@ def encrypt(plain, key):
 def decrypt(cipher, key):
     """Decrypt 'cipher' [string] with 'key' [string]."""
     plain = []
-    for i in range(len(cipher)):
+    for i, _ in enumerate(cipher):
         dec_char = _get_shifted_char(cipher[i], key[i % len(key)], False)
         plain.append(dec_char)
     return ''.join(plain)

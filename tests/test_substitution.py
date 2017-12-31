@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from substitution.ceasar import rot
 from substitution.xor import xorvalue
-from substitution.vigenere import *
+from substitution.vigenere import encrypt, decrypt
 
 class TestCeasar(TestCase):
     def test_letters(self):

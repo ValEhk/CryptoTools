@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 
-from symmetric.aesutil import *
+from symmetric.aesutil import AES_Matrix, expand_key
 from substitution.xor import xorstrings
 from util.blockcipher import Mode, Padding
-from util.convert import *
+from util.convert import matrix_to_str, str_to_matrix
 from util.error import AESError, PaddingError
 
 _nbrounds = {16: 10, 24:12, 32:14}
 
 class AES:
-    def __init__(self, key, mode, padding=Padding.PKCS7, iv=None):
-        """AES encryption
+    """AES encryption
 
-        Keyword arguments:
-        key [bytes] -- symmetric key
-        padding [IntEnum.Padding] -- padding method used (default PKCS7)
-        iv [bytes] -- initialisation vector (CBC only)
-        """
+    Keyword arguments:
+    key [bytes] -- symmetric key
+    padding [IntEnum.Padding] -- padding method used (default PKCS7)
+    iv [bytes] -- initialisation vector (CBC only)
+    """
+    def __init__(self, key, mode, padding=Padding.PKCS7, iv=None):
         self.key = key
         self.keylen = len(key)
         try:

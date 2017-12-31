@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import binascii
-import itertools
 
 def hex_to_str(hexv):
     """Convert hex value into byte string."""
@@ -9,8 +8,8 @@ def hex_to_str(hexv):
 
 def hexarray_to_str(hexa):
     """Convert hex array into byte string."""
-    str = ''.join(["{:02x}".format(h) for h in hexa] )
-    return binascii.unhexlify(str)
+    hstr = ''.join(["{:02x}".format(h) for h in hexa])
+    return binascii.unhexlify(hstr)
 
 # -------------------------------------------------------------------------- #
 
@@ -20,25 +19,24 @@ def hstr_to_ascii(hstr):
 
 # -------------------------------------------------------------------------- #
 
-def ascii_to_hstr(str):
+def ascii_to_hstr(astr):
     """Convert ascii string into hex byte string."""
-    return binascii.hexlify(str)
+    return binascii.hexlify(astr)
 
 # -------------------------------------------------------------------------- #
 
-def str_to_hex(str):
+def str_to_hex(bstr):
     """Convert byte string into hex value."""
-    return int(binascii.hexlify(str), 16)
+    return int(binascii.hexlify(bstr), 16)
 
-
-def str_to_hexarray(str):
+def str_to_hexarray(bstr):
     """Convert byte string into hex array."""
-    hex = binascii.hexlify(str)
-    return [int(hex[i:i+2], 16) for i in range(0, len(hex), 2)]
+    hstr = binascii.hexlify(bstr)
+    return [int(hstr[i:i+2], 16) for i in range(0, len(hstr), 2)]
 
-def str_to_matrix(str):
+def str_to_matrix(bstr):
     """Convert byte string into a 4x4 column-major order matrix."""
-    hexarray = str_to_hexarray(str)
+    hexarray = str_to_hexarray(bstr)
     return [[hexarray[k] for k in range(i, 16, 4)] for i in range(4)]
 
 # -------------------------------------------------------------------------- #

@@ -2,7 +2,7 @@
 
 from unittest import TestCase
 
-from factorizer.factorizer import *
+from factorizer.factorizer import Factorizer, Algo
 from util.error import UnitWarning, FactorizationError, FactordbError
 
 class TestGen(TestCase):
@@ -31,9 +31,9 @@ class TestFactordb(TestCase):
 
     def test_arbit(self):
         self.assertEqual(self.f.factorize(2787), [3, 929])
-        self.assertEqual(self.f.factorize(777772727772272727), [3, 11, 9371,  2515085960789])
+        self.assertEqual(self.f.factorize(777772727772272727), [3, 11, 9371, 2515085960789])
         self.assertEqual(self.f.factorize(572647860209), [857, 883, 756739])
-        self.assertEqual(self.f.factorize(2406937264475073), [3, 11, 29,  2515085960789])
+        self.assertEqual(self.f.factorize(2406937264475073), [3, 11, 29, 2515085960789])
         self.assertEqual(self.f.factorize(40054869679012345679012345679012345679012345679012345679012345679012345679012345679012345679),\
                 [8534419, 3019395743473, 1554394760620636982437498555986798873241611344431896131572608284673300517])
 
@@ -53,7 +53,7 @@ class TestSmallPrimes(TestCase):
         self.assertEqual(self.f.factorize(2809), [53, 53])
 
     def test_recurs(self):
-        self.assertEqual(self.f.factorize(2406937264475073), [3, 11, 29,  2515085960789])
+        self.assertEqual(self.f.factorize(2406937264475073), [3, 11, 29, 2515085960789])
         self.assertEqual(self.f.factorize(10210200), [2, 2, 2, 3, 5, 5, 7, 11, 13, 17])
 
     def test_limit(self):

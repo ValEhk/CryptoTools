@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-def xorvalue(input, value):
+def xorvalue(instr, value):
     """Xor each element of 'input' [bytes] with 'value' [int]."""
     res = []
-    for c in input:
+    for c in instr:
         res.append(c^value)
     return bytes(res)
 

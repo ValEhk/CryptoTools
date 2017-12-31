@@ -2,15 +2,15 @@
 
 from socket import socket, AF_INET, SOCK_STREAM
 
-from symmetric.aes import *
 from util.convert import hstr_to_ascii, ascii_to_hstr
+from util.error import PadOracleError
 
 
 def _split_cipher(cipher):
     """Split 'cipher' [string] into 16-chars blocks [List<List<int>>]."""
     cipher = hstr_to_ascii(cipher)
-    if len(cipher) == 0 or len(cipher)%16 != 0:
-        print("Raise Error")
+    if not cipher or len(cipher)%16 != 0:
+        raise PadOracleError("Cipher size must be a multiple of 16 bytes")
     clist = [[] for i in range(len(cipher)//16)]
     for i in range(0, len(cipher), 16):
         tmp = cipher[i:i+16]

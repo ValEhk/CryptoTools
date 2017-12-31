@@ -4,10 +4,8 @@ import warnings
 from enum import IntEnum
 
 import gmpy2
-import urllib.request as urlreq
-from bs4 import BeautifulSoup
 
-from . import fdbparser
+from factorizer import fdbparser
 from util.error import FactorizationError, UnitWarning
 
 
@@ -22,17 +20,17 @@ class Algo(IntEnum):
 # -------------------------------------------------------------------------- #
 
 class Factorizer:
-    def __init__(self, algo=Algo.FACTORDB, limit=10000):
-        """Wrapper for several integer factorization algorithms.
+    """Wrapper for several integer factorization algorithms.
 
-        Keyword arguments:
-        algo [IntEnum.Algo] -- algorithm used for the factorization (default Algo.FACTORDB)
-        limit [int] -- limit in _small_primes and _fermat. This prevents the algorithm
-            from trying to factorize a arbitrarily large number with an unapropriate
-            algorithm (default 10000)
-        """
+    Keyword arguments:
+    algo [IntEnum.Algo] -- algorithm used for the factorization (default Algo.FACTORDB)
+    limit [int] -- limit in _small_primes and _fermat. This prevents the algorithm
+        from trying to factorize a arbitrarily large number with an unapropriate
+        algorithm (default 10000)
+    """
+    def __init__(self, algo=Algo.FACTORDB, limit=10000):
         self.algo = algo
-        self.limit = limit;
+        self.limit = limit
         self.factors = []
         self._fcn = [self._factordb, self._small_primes, self._fermat, \
                 self._mersenne, self._woodall]

@@ -6,14 +6,14 @@ from util.error import RSAError, WienerError, HastadError, CommonModError
 from util.convert import hex_to_str, str_to_hex
 
 class RSA:
-    def __init__(self, p, q, e=65537):
-        """RSA encryption (cf. https://en.wikipedia.org/wiki/RSA_(cryptosystem)).
+    """RSA encryption (cf. https://en.wikipedia.org/wiki/RSA_(cryptosystem)).
 
-        Keyword arguments:
-        p [int] -- first prime used to generate RSA keys
-        q [int] -- second prime used to generate RSA keys
-        e [int] -- public exponent (default 65537)
-        """
+    Keyword arguments:
+    p [int] -- first prime used to generate RSA keys
+    q [int] -- second prime used to generate RSA keys
+    e [int] -- public exponent (default 65537)
+    """
+    def __init__(self, p, q, e=65537):
         self.p = gmpy2.mpz(p)
         if not gmpy2.is_prime(self.p):
             raise RSAError("'p' is not prime")
@@ -28,7 +28,7 @@ class RSA:
         return "RSA({:d}, {:d}, {:d})".format(self.p, self.q, self.e)
 
     def __str__(self):
-        return "RSA\n  p: {:d}\n  q: {:d}\n  e: {:d}".format(self.p, self.q, self.d)
+        return "RSA\n  p: {:d}\n  q: {:d}\n  e: {:d}".format(self.p, self.q, self.e)
 
 
     def gen_keys(self):
@@ -43,26 +43,16 @@ class RSA:
         self.privkey = PrivKey(n, d)
         return self.pubkey, self.privkey
 
-    def _mod_inv(self, a, m):
-        """Compute modular inverse of a mod m using extended Euclidean algorithm."""
-        x0, x1, y0, y1 = 1, 0, 0, 1
-        mtmp = m
-        while mtmp != 0:
-            q, a, mtmp =  a // mtmp, mtmp, a % mtmp
-            x0, x1 = x1, x0 - q * x1
-            y0, y1 = y1, y0 - q * y1
-        return  (x0 + m) % m
-
 # -------------------------------------------------------------------------- #
 
 class PubKey():
-    def __init__(self, n, e):
-        """RSA public key
+    """RSA public key
 
-        Keyword arguments:
-        n [int] -- modulus
-        e [int] -- public exponent
-        """
+    Keyword arguments:
+    n [int] -- modulus
+    e [int] -- public exponent
+    """
+    def __init__(self, n, e):
         self.n = n
         self.e = e
 
@@ -78,13 +68,13 @@ class PubKey():
 # -------------------------------------------------------------------------- #
 
 class PrivKey():
-    def __init__(self, n, d):
-        """RSA private key
+    """RSA private key
 
-        Keyword arguments:
-        n [int] -- modulus
-        d [int] -- private exponent
-        """
+    Keyword arguments:
+    n [int] -- modulus
+    d [int] -- private exponent
+    """
+    def __init__(self, n, d):
         self.n = n
         self.d = d
 
@@ -165,7 +155,7 @@ def hastad(pks, cs):
     me = 0
     for pk in pks:
         prod *= pk.n
-    for pk,c in zip(pks, cs):
+    for pk, c in zip(pks, cs):
         p = prod//pk.n
         me += c * gmpy2.invert(p, pk.n) * p
     return hex_to_str(gmpy2.iroot(me % prod, pks[0].e)[0])
