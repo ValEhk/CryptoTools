@@ -79,3 +79,13 @@ class PadOracleError(Exception):
         self.value = value
     def __str__(self):
         return self.value
+
+# -------------------------------------------------------------------------- #
+
+class DLPError(Exception):
+    """Generic DLP error."""
+    def __init__(self, value):
+        super().__init__(value)
+        self.value = value
+    def __str__(self):
+        return self.value

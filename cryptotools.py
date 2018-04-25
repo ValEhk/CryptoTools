@@ -10,6 +10,7 @@ from factorizer.factorizer import Factorizer, Algo
 from asymmetric.rsa import RSA, PrivKey, PubKey, wiener, hastad, common_modulus
 from symmetric.aes import AES
 from symmetric.padoracle import padding_oracle
+from dlp.dlp import discrete_log
 from util.blockcipher import Mode, Padding
 from util.convert import hex_to_str
 
@@ -92,6 +93,9 @@ def handle_vigenere(args):
     elif args.action == "decrypt":
         return vig.decrypt(args.input, args.key)
 
+def handle_dlp(args):
+    return discrete_log(args.g, args.h, args.n)
+
 # -------------------------------------------------------------------------- #
 
 def parse_int(value):
@@ -108,7 +112,8 @@ if __name__ == "__main__":
              "\n    * RSA basic encryption/decryption;",
              "\n    * common RSA attacks such as Wiener, Hastad or common modulus;",
              "\n    * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;",
-             "\n    * CBC padding oracle attack.")
+             "\n    * CBC padding oracle attack.",
+             "\n    * resolution of the discrete logarithm problem based on Pohlig-Hellman algorithm.")
     parser = ArgumentParser(description=''.join(descr), formatter_class=RawDescriptionHelpFormatter)
     parser.add_argument('--version', action='version', version="%(prog)s 1.0")
     subparser = parser.add_subparsers(dest="cmd")
@@ -226,6 +231,12 @@ if __name__ == "__main__":
     vencsub = vigsubs.add_parser("encrypt", parents=[vin_argp, vkey_argp],
                                  help="Encrypt 'input' with key k")
 
+    # DLP parser
+    dlpparser = subparser.add_parser("dlp", help="discrete logarithm problem")
+    dlpparser.add_argument("g", type=parse_int, help="h=g^x mod n [int]")
+    dlpparser.add_argument("h", type=parse_int, help="h=g^x mod n [int]")
+    dlpparser.add_argument("n", type=parse_int, help="modulo [int]")
+
     # Parse args
     args_parser = parser.parse_args()
     if args_parser.cmd == "factorize":
@@ -240,5 +251,7 @@ if __name__ == "__main__":
         handle_xor(args_parser)
     elif args_parser.cmd == "vigenere":
         print(handle_vigenere(args_parser))
+    elif args_parser.cmd == "dlp":
+        print(handle_dlp(args_parser))
     else:
         parser.print_help()

@@ -282,6 +282,7 @@ class TestAES256_CBC(TestCase):
         expected = binascii.hexlify(aestrue.encrypt(plain + b"\x08"*8))
         self.assertEqual(cipher, expected.decode())
         self.assertEqual(aes.decrypt(cipher), plain)
+
 # -------------------------------------------------------------------------- #
 
 if __name__ == '__main__':

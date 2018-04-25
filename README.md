@@ -12,7 +12,8 @@ Currently available are:
 * RSA basic encryption/decryption;
 * common RSA attacks such as Wiener, Hastad or common modulus;
 * AES-128, AES-192, AES-224 (ECB or CBC) with multiple padding choice;
-* CBC padding oracle attack.
+* CBC padding oracle attack;
+* resolution of the discrete logarithm problem based on Pohlig-Hellman algorithm.
 
 
 Usage
