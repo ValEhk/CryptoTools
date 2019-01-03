@@ -34,6 +34,8 @@ def _next_block(clist, plain, n, offset, sock, err):
             clist_tmp[-2-n][-1-j] = pad ^ plain[-1-n][-1-j] ^ clist[-2-n][-1-j]
 
         for j in range(256):
+
+            data = sock.recv(1024)
             clist_tmp[-2-n][-pad] = j
             sock.sendall(ascii_to_hstr(_merge_cipher(clist_tmp)))
             data = sock.recv(1024)
@@ -60,11 +62,15 @@ def padding_oracle(cipher, host):
         # Compute padding
         padding = 0
         for i in range(16):
+            data = s.recv(1024)
+            data = s.recv(1024)
+            print(data)
             clist[-2][i] = (clist[-2][i] + 1) % 256
             s.sendall(ascii_to_hstr(_merge_cipher(clist)))
             clist[-2][i] = (clist[-2][i] - 1) % 256
             data = s.recv(1024)
-            if host["error"] in data:
+            print(data)
+            if host["error"] in data or b"invalid" in data or b"Error" in data:
                 padding = 16 - i
                 break
         # Update plain with the previously found padding
