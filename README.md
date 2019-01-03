@@ -45,5 +45,5 @@ Required packages
 
 License
 -------
-The project is distributed under the MIT License. See [LICENSE](https://github.com/ValEhk/RSActf/blob/master/LICENSE) for more details.
+The project is distributed under the MIT License. See [LICENSE](https://github.com/ValEhk/CryptoTools/blob/master/LICENSE) for more details.
 
