@@ -4,7 +4,10 @@ import binascii
 
 def hex_to_str(hexv):
     """Convert hex value into byte string."""
-    return binascii.unhexlify("{:02x}".format(hexv))
+    hstr = "{:02x}".format(hexv)
+    if len(hstr) % 2 == 1:
+        hstr = "0"+hstr
+    return binascii.unhexlify(hstr)
 
 def hexarray_to_str(hexa):
     """Convert hex array into byte string."""
